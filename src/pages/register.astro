@@ -1,0 +1,155 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Register">
+  <main class="auth-page">
+    <div class="auth-card">
+      <h1>Buat Akun</h1>
+
+      <p class="auth-description">
+        Silakan buat akun untuk melanjutkan.
+      </p>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label for="full_name">Nama Lengkap</label>
+          <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            placeholder="Nama lengkap"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="email@example.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Minimal 6 karakter"
+            minlength="6"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password_confirmation">Konfirmasi Password</label>
+          <input
+            type="password"
+            id="password_confirmation"
+            name="password_confirmation"
+            placeholder="Ulangi password"
+            minlength="6"
+            required
+          />
+        </div>
+
+        <button type="submit" id="register-button">
+          Daftar
+        </button>
+
+        <p id="register-message" class="message"></p>
+      </form>
+
+      <p class="auth-footer">
+        Sudah punya akun?
+        <a href="/login">Login</a>
+      </p>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase'
+
+  const form = document.querySelector('#register-form') as HTMLFormElement
+  const button = document.querySelector('#register-button') as HTMLButtonElement
+  const message = document.querySelector('#register-message') as HTMLParagraphElement
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault()
+
+    const fullName = (
+      document.querySelector('#full_name') as HTMLInputElement
+    ).value.trim()
+
+    const email = (
+      document.querySelector('#email') as HTMLInputElement
+    ).value.trim()
+
+    const password = (
+      document.querySelector('#password') as HTMLInputElement
+    ).value
+
+    const passwordConfirmation = (
+      document.querySelector('#password_confirmation') as HTMLInputElement
+    ).value
+
+    message.textContent = ''
+    message.className = 'message'
+
+    if (password !== passwordConfirmation) {
+      message.textContent = 'Konfirmasi password tidak cocok.'
+      message.classList.add('error')
+      return
+    }
+
+    button.disabled = true
+    button.textContent = 'Mendaftarkan...'
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+      },
+    })
+
+    if (error) {
+      message.textContent = error.message
+      message.classList.add('error')
+
+      button.disabled = false
+      button.textContent = 'Daftar'
+
+      return
+    }
+
+    /*
+     * Trigger PostgreSQL kita akan membuat public.profiles
+     * otomatis ketika auth.users dibuat.
+     */
+
+    if (data.session) {
+      // User langsung mendapatkan session.
+      window.location.href = '/dashboard'
+      return
+    }
+
+    // Jika email confirmation aktif.
+    message.textContent =
+      'Registrasi berhasil. Silakan cek email untuk konfirmasi akun.'
+    message.classList.add('success')
+
+    form.reset()
+
+    button.disabled = false
+    button.textContent = 'Daftar'
+  })
+</script>

@@ -1,0 +1,169 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro'
+---
+
+<DashboardLayout title="Buat Surat - SuratKu">
+  <main class="dashboard-page">
+    <div class="dashboard-container">
+
+      <!-- HEADER -->
+      <header class="dashboard-header">
+        <div>
+          <span class="dashboard-brand">SuratKu</span>
+
+          <h1>Buat Surat</h1>
+
+          <p class="dashboard-description">
+            Pilih template surat yang ingin kamu buat.
+          </p>
+        </div>
+
+        <a
+          href="/dashboard"
+          class="back-button"
+        >
+          Kembali
+        </a>
+      </header>
+
+      <!-- TEMPLATE -->
+      <section class="template-section">
+
+        <div class="section-heading">
+          <span class="dashboard-label">
+            TEMPLATE SURAT
+          </span>
+
+          <h2>
+            Pilih jenis surat
+          </h2>
+
+          <p>
+            Mulai dengan memilih template yang sesuai dengan kebutuhanmu.
+          </p>
+        </div>
+
+        <div class="template-grid">
+
+          <!-- SURAT RESMI -->
+          <a
+  href="/dashboard/buat/resmi"
+  class="template-card"
+>
+            <span class="template-number">
+              01
+            </span>
+
+            <div class="template-content">
+              <h3>
+                Surat Resmi
+              </h3>
+
+              <p>
+                Template untuk membuat surat resmi
+                dengan format yang rapi dan profesional.
+              </p>
+            </div>
+
+            <span class="template-arrow">
+              →
+            </span>
+          </a>
+
+          <!-- SURAT UNDANGAN -->
+          <a
+            href="/dashboard/buat?template=undangan"
+            class="template-card"
+          >
+            <span class="template-number">
+              02
+            </span>
+
+            <div class="template-content">
+              <h3>
+                Surat Undangan
+              </h3>
+
+              <p>
+                Template untuk membuat surat undangan
+                kegiatan, acara, atau pertemuan.
+              </p>
+            </div>
+
+            <span class="template-arrow">
+              →
+            </span>
+          </a>
+
+          <!-- SURAT KETERANGAN -->
+          <a
+            href="/dashboard/buat?template=keterangan"
+            class="template-card"
+          >
+            <span class="template-number">
+              03
+            </span>
+
+            <div class="template-content">
+              <h3>
+                Surat Keterangan
+              </h3>
+
+              <p>
+                Template untuk membuat berbagai
+                macam surat keterangan.
+              </p>
+            </div>
+
+            <span class="template-arrow">
+              →
+            </span>
+          </a>
+
+          <!-- SURAT PERMOHONAN -->
+          <a
+            href="/dashboard/buat?template=permohonan"
+            class="template-card"
+          >
+            <span class="template-number">
+              04
+            </span>
+
+            <div class="template-content">
+              <h3>
+                Surat Permohonan
+              </h3>
+
+              <p>
+                Template untuk membuat surat
+                permohonan secara formal.
+              </p>
+            </div>
+
+            <span class="template-arrow">
+              →
+            </span>
+          </a>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+</DashboardLayout>
+
+<script>
+  import { supabase } from '../../lib/supabase'
+
+  async function checkUser() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      window.location.href = '/login'
+    }
+  }
+
+  checkUser()
+</script>

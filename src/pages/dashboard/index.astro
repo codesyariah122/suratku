@@ -1,0 +1,153 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro'
+---
+
+<DashboardLayout title="Dashboard - SuratKu">
+  <main class="dashboard-page">
+    <div class="dashboard-container">
+
+      <!-- HEADER -->
+      <header class="dashboard-header">
+        <div>
+          <span class="dashboard-brand">SuratKu</span>
+
+          <h1>Dashboard</h1>
+
+          <p class="dashboard-description">
+            Selamat datang di SuratKu.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          id="logout-button"
+          class="logout-button"
+        >
+          Logout
+        </button>
+      </header>
+
+      <!-- USER -->
+      <section class="dashboard-card">
+        <span class="dashboard-label">
+          AKUN ANDA
+        </span>
+
+        <h2 id="user-name">
+          Memuat...
+        </h2>
+
+        <p id="user-email">
+          Memuat...
+        </p>
+      </section>
+
+      <!-- SURAT -->
+      <section class="dashboard-card">
+        <span class="dashboard-label">
+          SURAT
+        </span>
+
+        <h2>Mulai Buat Surat</h2>
+
+        <p>
+          Buat surat resmi dengan template yang sudah tersedia.
+        </p>
+
+        <a
+          href="/dashboard/buat"
+          class="dashboard-action"
+        >
+          Buat Surat
+        </a>
+      </section>
+
+      <!-- MENU -->
+      <div class="dashboard-menu">
+
+        <a href="/dashboard/buat" class="dashboard-menu-card">
+          <span class="dashboard-menu-number">01</span>
+
+          <h3>Buat Surat</h3>
+
+          <p>
+            Buat surat baru menggunakan template SuratKu.
+          </p>
+        </a>
+
+        <a href="/dashboard/riwayat" class="dashboard-menu-card">
+          <span class="dashboard-menu-number">02</span>
+
+          <h3>Riwayat Surat</h3>
+
+          <p>
+            Lihat dan kelola surat yang sudah dibuat.
+          </p>
+        </a>
+
+        <a href="/dashboard/pengaturan" class="dashboard-menu-card">
+          <span class="dashboard-menu-number">03</span>
+
+          <h3>Pengaturan</h3>
+
+          <p>
+            Kelola informasi akun dan profil kamu.
+          </p>
+        </a>
+
+      </div>
+
+    </div>
+  </main>
+</DashboardLayout>
+
+<script>
+  import { supabase } from '../../lib/supabase'
+
+  const userName = document.querySelector('#user-name')
+  const userEmail = document.querySelector('#user-email')
+  const logoutButton = document.querySelector('#logout-button')
+
+  async function loadUser() {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser()
+
+    if (error || !user) {
+      window.location.href = '/login'
+      return
+    }
+
+    const fullName =
+      user.user_metadata?.full_name || 'Pengguna SuratKu'
+
+    if (userName) {
+      userName.textContent = fullName
+    }
+
+    if (userEmail) {
+      userEmail.textContent = user.email || ''
+    }
+  }
+
+  logoutButton?.addEventListener('click', async () => {
+    logoutButton.textContent = 'Logout...'
+    logoutButton.setAttribute('disabled', 'true')
+
+    const { error } = await supabase.auth.signOut()
+
+    if (error) {
+      console.error('Logout error:', error)
+
+      logoutButton.textContent = 'Logout'
+      logoutButton.removeAttribute('disabled')
+
+      return
+    }
+
+    window.location.href = '/login'
+  })
+
+  loadUser()
+</script>

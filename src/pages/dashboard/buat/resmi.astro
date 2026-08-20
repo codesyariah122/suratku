@@ -1,0 +1,328 @@
+---
+import DashboardLayout from '../../../layouts/DashboardLayout.astro'
+---
+
+<DashboardLayout title="Surat Resmi - SuratKu">
+  <main class="dashboard-page">
+    <div class="dashboard-container">
+
+      <!-- HEADER -->
+      <header class="dashboard-header">
+        <div>
+          <span class="dashboard-brand">SuratKu</span>
+
+          <h1>Surat Resmi</h1>
+
+          <p class="dashboard-description">
+            Isi informasi surat resmi yang ingin kamu buat.
+          </p>
+        </div>
+
+        <a
+          href="/dashboard/buat"
+          class="back-button"
+        >
+          Kembali
+        </a>
+      </header>
+
+      <!-- FORM -->
+      <section class="letter-form-section">
+
+        <div class="section-heading">
+          <span class="dashboard-label">
+            FORM SURAT
+          </span>
+
+          <h2>
+            Informasi Surat
+          </h2>
+
+          <p>
+            Lengkapi data berikut untuk membuat surat resmi.
+          </p>
+        </div>
+
+        <form id="letter-form" class="letter-form">
+
+          <!-- INFORMASI SURAT -->
+          <div class="form-card">
+
+            <div class="form-card-header">
+              <h3>Informasi Surat</h3>
+              <p>
+                Informasi dasar mengenai surat yang akan dibuat.
+              </p>
+            </div>
+
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label for="nomor_surat">
+                  Nomor Surat
+                </label>
+
+                <input
+                  id="nomor_surat"
+                  name="nomor_surat"
+                  type="text"
+                  placeholder="Contoh: 001/SRT/2026"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="tanggal_surat">
+                  Tanggal Surat
+                </label>
+
+                <input
+                  id="tanggal_surat"
+                  name="tanggal_surat"
+                  type="date"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="lampiran">
+                  Lampiran
+                </label>
+
+                <input
+                  id="lampiran"
+                  name="lampiran"
+                  type="text"
+                  placeholder="Contoh: 1 berkas"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="perihal">
+                  Perihal
+                </label>
+
+                <input
+                  id="perihal"
+                  name="perihal"
+                  type="text"
+                  placeholder="Contoh: Permohonan Kerja Sama"
+                  required
+                />
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- TUJUAN -->
+          <div class="form-card">
+
+            <div class="form-card-header">
+              <h3>Tujuan Surat</h3>
+              <p>
+                Informasi penerima surat.
+              </p>
+            </div>
+
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label for="tujuan_nama">
+                  Nama Penerima
+                </label>
+
+                <input
+                  id="tujuan_nama"
+                  name="tujuan_nama"
+                  type="text"
+                  placeholder="Contoh: Bapak John Doe"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="tujuan_jabatan">
+                  Jabatan
+                </label>
+
+                <input
+                  id="tujuan_jabatan"
+                  name="tujuan_jabatan"
+                  type="text"
+                  placeholder="Contoh: Direktur"
+                />
+              </div>
+
+              <div class="form-group form-group-full">
+                <label for="tujuan_instansi">
+                  Instansi
+                </label>
+
+                <input
+                  id="tujuan_instansi"
+                  name="tujuan_instansi"
+                  type="text"
+                  placeholder="Contoh: PT Contoh Indonesia"
+                />
+              </div>
+
+              <div class="form-group form-group-full">
+                <label for="tujuan_alamat">
+                  Alamat
+                </label>
+
+                <textarea
+                  id="tujuan_alamat"
+                  name="tujuan_alamat"
+                  rows="3"
+                  placeholder="Alamat penerima surat"
+                ></textarea>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ISI SURAT -->
+          <div class="form-card">
+
+            <div class="form-card-header">
+              <h3>Isi Surat</h3>
+              <p>
+                Tulis isi surat yang ingin disampaikan.
+              </p>
+            </div>
+
+            <div class="form-group form-group-full">
+
+              <label for="isi_surat">
+                Isi Surat
+              </label>
+
+              <textarea
+                id="isi_surat"
+                name="isi_surat"
+                rows="12"
+                placeholder="Tuliskan isi surat di sini..."
+                required
+              ></textarea>
+
+            </div>
+
+          </div>
+
+          <!-- PENUTUP -->
+          <div class="form-card">
+
+            <div class="form-card-header">
+              <h3>Penutup & Pengirim</h3>
+              <p>
+                Informasi penutup dan pihak yang menandatangani surat.
+              </p>
+            </div>
+
+            <div class="form-grid">
+
+              <div class="form-group form-group-full">
+                <label for="penutup">
+                  Kalimat Penutup
+                </label>
+
+                <textarea
+                  id="penutup"
+                  name="penutup"
+                  rows="4"
+                  placeholder="Contoh: Demikian surat ini kami sampaikan. Atas perhatian dan kerja samanya, kami ucapkan terima kasih."
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="pengirim_nama">
+                  Nama Pengirim
+                </label>
+
+                <input
+                  id="pengirim_nama"
+                  name="pengirim_nama"
+                  type="text"
+                  placeholder="Nama lengkap"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="pengirim_jabatan">
+                  Jabatan Pengirim
+                </label>
+
+                <input
+                  id="pengirim_jabatan"
+                  name="pengirim_jabatan"
+                  type="text"
+                  placeholder="Contoh: Direktur"
+                  required
+                />
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ACTION -->
+          <div class="letter-form-actions">
+
+            <a
+              href="/dashboard/buat"
+              class="back-button"
+            >
+              Batal
+            </a>
+
+            <button
+              type="submit"
+              class="dashboard-action"
+            >
+              Lanjut ke Preview
+            </button>
+
+          </div>
+
+        </form>
+
+      </section>
+
+    </div>
+  </main>
+</DashboardLayout>
+
+<script>
+  import { supabase } from '../../../lib/supabase'
+
+  async function checkUser() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      window.location.href = '/login'
+    }
+  }
+
+  checkUser()
+
+  const form = document.getElementById(
+    'letter-form'
+  ) as HTMLFormElement | null
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault()
+
+    const formData = new FormData(form)
+
+    const data = Object.fromEntries(formData.entries())
+
+    console.log('Data surat:', data)
+
+    alert('Form surat berhasil diisi.')
+  })
+</script>
