@@ -2,327 +2,660 @@
 import DashboardLayout from '../../../layouts/DashboardLayout.astro'
 ---
 
-<DashboardLayout title="Surat Resmi - SuratKu">
-  <main class="dashboard-page">
-    <div class="dashboard-container">
-
-      <!-- HEADER -->
-      <header class="dashboard-header">
-        <div>
-          <span class="dashboard-brand">SuratKu</span>
-
-          <h1>Surat Resmi</h1>
-
-          <p class="dashboard-description">
-            Isi informasi surat resmi yang ingin kamu buat.
-          </p>
-        </div>
-
-        <a
-          href="/dashboard/buat"
-          class="back-button"
+<DashboardLayout title="Buat Surat Resmi - SuratKu">
+  <section class="composer-shell">
+    <header class="page-header composer-header">
+      <div>
+        <a class="text-link" href="/dashboard/buat">← Pilih template</a><h1>Buat surat resmi</h1><p>
+          Isi data di kiri. Dokumen akan diperbarui secara langsung.
+        </p>
+      </div>
+      <div class="header-actions">
+        <span id="save-status" class="save-status">Belum disimpan</span><button
+          id="print-button"
+          class="secondary-button"
+          type="button">Cetak / PDF</button
         >
-          Kembali
-        </a>
-      </header>
+      </div>
+    </header>
 
-      <!-- FORM -->
-      <section class="letter-form-section">
-
-        <div class="section-heading">
-          <span class="dashboard-label">
-            FORM SURAT
-          </span>
-
-          <h2>
-            Informasi Surat
-          </h2>
-
-          <p>
-            Lengkapi data berikut untuk membuat surat resmi.
-          </p>
-        </div>
-
-        <form id="letter-form" class="letter-form">
-
-          <!-- INFORMASI SURAT -->
-          <div class="form-card">
-
-            <div class="form-card-header">
-              <h3>Informasi Surat</h3>
-              <p>
-                Informasi dasar mengenai surat yang akan dibuat.
-              </p>
+    <form id="letter-form" class="composer-grid">
+      <div class="composer-form">
+        <section class="panel-card design-toolbar">
+          <div>
+            <label for="template_select">Template saya</label><select id="template_select"
+              ><option value="">Surat kosong</option></select
+            >
+          </div><div class="font-control">
+            <label>Font dokumen</label><select
+              id="font_family"
+              name="font_family"
+              class="native-font-select"
+              aria-hidden="true"><option value="Lora">Lora</option></select
+            ><button
+              id="font-picker-button"
+              class="font-picker-button"
+              type="button"
+              aria-expanded="false"
+              ><span id="selected-font">Lora</span><small>Serif</small><b>⌄</b></button
+            ><div id="font-picker-menu" class="font-picker-menu" hidden>
+              <div class="font-picker-search">
+                <input id="font-search" type="search" placeholder="Cari font…" />
+              </div><div id="font-options" class="font-options"></div>
             </div>
-
-            <div class="form-grid">
-
-              <div class="form-group">
-                <label for="nomor_surat">
-                  Nomor Surat
-                </label>
-
-                <input
-                  id="nomor_surat"
-                  name="nomor_surat"
-                  type="text"
-                  placeholder="Contoh: 001/SRT/2026"
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="tanggal_surat">
-                  Tanggal Surat
-                </label>
-
-                <input
-                  id="tanggal_surat"
-                  name="tanggal_surat"
-                  type="date"
-                  required
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="lampiran">
-                  Lampiran
-                </label>
-
-                <input
-                  id="lampiran"
-                  name="lampiran"
-                  type="text"
-                  placeholder="Contoh: 1 berkas"
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="perihal">
-                  Perihal
-                </label>
-
-                <input
-                  id="perihal"
-                  name="perihal"
-                  type="text"
-                  placeholder="Contoh: Permohonan Kerja Sama"
-                  required
-                />
-              </div>
-
+          </div><button id="save-template" class="secondary-button" type="button"
+            >Simpan jadi template</button
+          >
+        </section>
+        <section class="panel-card form-section">
+          <div class="form-section-title">
+            <span>01</span><div>
+              <h2>Identitas surat</h2><p>Nomor, tanggal, dan pokok surat.</p>
             </div>
-
-          </div>
-
-          <!-- TUJUAN -->
-          <div class="form-card">
-
-            <div class="form-card-header">
-              <h3>Tujuan Surat</h3>
-              <p>
-                Informasi penerima surat.
-              </p>
-            </div>
-
-            <div class="form-grid">
-
-              <div class="form-group">
-                <label for="tujuan_nama">
-                  Nama Penerima
-                </label>
-
-                <input
-                  id="tujuan_nama"
-                  name="tujuan_nama"
-                  type="text"
-                  placeholder="Contoh: Bapak John Doe"
-                  required
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="tujuan_jabatan">
-                  Jabatan
-                </label>
-
-                <input
-                  id="tujuan_jabatan"
-                  name="tujuan_jabatan"
-                  type="text"
-                  placeholder="Contoh: Direktur"
-                />
-              </div>
-
-              <div class="form-group form-group-full">
-                <label for="tujuan_instansi">
-                  Instansi
-                </label>
-
-                <input
-                  id="tujuan_instansi"
-                  name="tujuan_instansi"
-                  type="text"
-                  placeholder="Contoh: PT Contoh Indonesia"
-                />
-              </div>
-
-              <div class="form-group form-group-full">
-                <label for="tujuan_alamat">
-                  Alamat
-                </label>
-
-                <textarea
-                  id="tujuan_alamat"
-                  name="tujuan_alamat"
-                  rows="3"
-                  placeholder="Alamat penerima surat"
-                ></textarea>
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- ISI SURAT -->
-          <div class="form-card">
-
-            <div class="form-card-header">
-              <h3>Isi Surat</h3>
-              <p>
-                Tulis isi surat yang ingin disampaikan.
-              </p>
-            </div>
-
-            <div class="form-group form-group-full">
-
-              <label for="isi_surat">
-                Isi Surat
-              </label>
-
-              <textarea
-                id="isi_surat"
-                name="isi_surat"
-                rows="12"
-                placeholder="Tuliskan isi surat di sini..."
+          </div><div class="form-grid">
+            <div class="form-group">
+              <label for="letter_number">Nomor surat</label><input
+                id="letter_number"
+                name="letter_number"
+                placeholder="001/SK/IX/2026"
+              />
+            </div><div class="form-group">
+              <label for="letter_date">Tanggal</label><input
+                id="letter_date"
+                name="letter_date"
+                type="date"
                 required
-              ></textarea>
-
+              />
+            </div><div class="form-group">
+              <label for="attachment">Lampiran</label><input
+                id="attachment"
+                name="attachment"
+                placeholder="–"
+              />
+            </div><div class="form-group">
+              <label for="subject">Perihal</label><input
+                id="subject"
+                name="subject"
+                placeholder="Permohonan kerja sama"
+                required
+              />
             </div>
-
           </div>
-
-          <!-- PENUTUP -->
-          <div class="form-card">
-
-            <div class="form-card-header">
-              <h3>Penutup & Pengirim</h3>
-              <p>
-                Informasi penutup dan pihak yang menandatangani surat.
-              </p>
+        </section>
+        <section class="panel-card form-section">
+          <div class="form-section-title">
+            <span>02</span><div><h2>Penerima</h2><p>Kepada siapa surat ini ditujukan.</p></div>
+          </div><div class="form-grid">
+            <div class="form-group">
+              <label for="recipient_name">Nama penerima</label><input
+                id="recipient_name"
+                name="recipient_name"
+                placeholder="Bapak/Ibu Nama Penerima"
+                required
+              />
+            </div><div class="form-group">
+              <label for="recipient_title">Jabatan</label><input
+                id="recipient_title"
+                name="recipient_title"
+                placeholder="Direktur Utama"
+              />
+            </div><div class="form-group form-group-full">
+              <label for="recipient_company">Instansi / perusahaan</label><input
+                id="recipient_company"
+                name="recipient_company"
+                placeholder="PT Perusahaan Indonesia"
+              />
+            </div><div class="form-group form-group-full">
+              <label for="recipient_address">Alamat</label><textarea
+                id="recipient_address"
+                name="recipient_address"
+                rows="2"
+                placeholder="Alamat lengkap penerima"></textarea>
             </div>
-
-            <div class="form-grid">
-
-              <div class="form-group form-group-full">
-                <label for="penutup">
-                  Kalimat Penutup
-                </label>
-
-                <textarea
-                  id="penutup"
-                  name="penutup"
-                  rows="4"
-                  placeholder="Contoh: Demikian surat ini kami sampaikan. Atas perhatian dan kerja samanya, kami ucapkan terima kasih."
-                ></textarea>
-              </div>
-
-              <div class="form-group">
-                <label for="pengirim_nama">
-                  Nama Pengirim
-                </label>
-
-                <input
-                  id="pengirim_nama"
-                  name="pengirim_nama"
-                  type="text"
-                  placeholder="Nama lengkap"
-                  required
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="pengirim_jabatan">
-                  Jabatan Pengirim
-                </label>
-
-                <input
-                  id="pengirim_jabatan"
-                  name="pengirim_jabatan"
-                  type="text"
-                  placeholder="Contoh: Direktur"
-                  required
-                />
-              </div>
-
-            </div>
-
           </div>
+        </section>
+        <section class="panel-card form-section">
+          <div class="form-section-title">
+            <span>03</span><div>
+              <h2>Isi surat</h2><p>Sampaikan maksud secara ringkas dan profesional.</p>
+            </div>
+          </div><div class="form-group">
+            <label for="body">Isi utama</label><textarea
+              id="body"
+              name="body"
+              rows="9"
+              placeholder="Dengan hormat,\n\nSehubungan dengan..."
+              required></textarea>
+          </div><div class="form-group">
+            <label for="closing">Kalimat penutup</label><textarea
+              id="closing"
+              name="closing"
+              rows="3"
+              placeholder="Demikian surat ini kami sampaikan. Atas perhatian dan kerja samanya, kami ucapkan terima kasih."
+            ></textarea>
+          </div>
+        </section>
+        <section class="panel-card form-section">
+          <div class="form-section-title">
+            <span>04</span><div>
+              <h2>Penandatangan</h2><p>Identitas pihak yang bertanggung jawab.</p>
+            </div>
+          </div><div class="form-grid">
+            <div class="form-group">
+              <label for="sender_name">Nama lengkap</label><input
+                id="sender_name"
+                name="sender_name"
+                required
+              />
+            </div><div class="form-group">
+              <label for="sender_title">Jabatan</label><input
+                id="sender_title"
+                name="sender_title"
+                placeholder="Direktur"
+              />
+            </div>
+          </div>
+        </section>
+        <div class="composer-actions">
+          <button id="draft-button" class="secondary-button" type="button">Simpan draf</button
+          ><button id="final-button" class="primary-button" type="submit"
+            >Simpan sebagai final</button
+          >
+        </div><p id="form-message" class="message"></p>
+      </div>
 
-          <!-- ACTION -->
-          <div class="letter-form-actions">
-
-            <a
-              href="/dashboard/buat"
-              class="back-button"
+      <aside class="preview-pane">
+        <div class="preview-label">
+          <span>PREVIEW A4 · KLIK TEKS UNTUK EDIT</span><span
+            >Perubahan tersimpan saat Anda menekan tombol simpan</span
+          >
+        </div><article id="letter-preview" class="letter-paper">
+          <header class="paper-letterhead">
+            <div class="paper-mark" id="p-logo">SK</div><div>
+              <strong id="p-company">Nama Perusahaan Anda</strong><small id="p-company-details"
+                >Alamat perusahaan · Telepon</small
+              >
+            </div>
+          </header><div class="paper-rule"></div><div class="paper-date" id="p-date">
+            Jakarta, 3 September 2026
+          </div><dl class="paper-meta">
+            <div>
+              <dt>Nomor</dt><dd>
+                : <span id="p-number" contenteditable="true" data-field="letter_number">—</span>
+              </dd>
+            </div><div>
+              <dt>Lampiran</dt><dd>
+                : <span id="p-attachment" contenteditable="true" data-field="attachment">—</span>
+              </dd>
+            </div><div>
+              <dt>Perihal</dt><dd>
+                : <span id="p-subject" contenteditable="true" data-field="subject">—</span>
+              </dd>
+            </div>
+          </dl><div class="paper-recipient">
+            Yth. <strong id="p-recipient" contenteditable="true" data-field="recipient_name"
+              >Bapak/Ibu Penerima</strong
+            ><br /><span id="p-recipient-company"></span><br /><span
+              id="p-address"
+              contenteditable="true"
+              data-field="recipient_address">di Tempat</span
             >
-              Batal
-            </a>
-
-            <button
-              type="submit"
-              class="dashboard-action"
+          </div><div id="p-body" class="paper-body" contenteditable="true" data-field="body">
+            Dengan hormat,<br /><br />Isi surat Anda akan tampil di bagian ini.
+          </div><p id="p-closing" class="paper-closing" contenteditable="true" data-field="closing">
+          </p><div class="paper-signature">
+            <span>Hormat kami,</span><div class="signature-space"></div><strong
+              id="p-sender"
+              contenteditable="true"
+              data-field="sender_name">Nama Pengirim</strong
+            ><small id="p-sender-title" contenteditable="true" data-field="sender_title"
+              >Jabatan</small
             >
-              Lanjut ke Preview
-            </button>
-
           </div>
-
-        </form>
-
-      </section>
-
-    </div>
-  </main>
+        </article>
+      </aside>
+    </form>
+  </section>
 </DashboardLayout>
 
 <script>
   import { supabase } from '../../../lib/supabase'
-
-  async function checkUser() {
+  const form = document.querySelector('#letter-form') as HTMLFormElement
+  const status = document.querySelector('#save-status') as HTMLElement
+  const message = document.querySelector('#form-message') as HTMLElement
+  const paper = document.querySelector('#letter-preview') as HTMLElement
+  const fontSelect = document.querySelector('#font_family') as HTMLSelectElement
+  const templateSelect = document.querySelector('#template_select') as HTMLSelectElement
+  const routeParams = new URLSearchParams(location.search)
+  let editingId = routeParams.get('id')
+  const initialTemplateId = routeParams.get('template')
+  let logoUrl = ''
+  let templates: any[] = []
+  const fonts = [
+    ['Lora', 'Serif'],
+    ['Merriweather', 'Serif'],
+    ['Libre Baskerville', 'Serif'],
+    ['EB Garamond', 'Serif'],
+    ['Crimson Pro', 'Serif'],
+    ['Source Serif 4', 'Serif'],
+    ['Roboto Slab', 'Serif'],
+    ['Bitter', 'Serif'],
+    ['Alegreya', 'Serif'],
+    ['Georgia', 'Serif'],
+    ['Times New Roman', 'Serif'],
+    ['Inter', 'Sans Serif'],
+    ['Roboto', 'Sans Serif'],
+    ['Open Sans', 'Sans Serif'],
+    ['Source Sans 3', 'Sans Serif'],
+    ['DM Sans', 'Sans Serif'],
+    ['Manrope', 'Sans Serif'],
+    ['Montserrat', 'Sans Serif'],
+    ['Poppins', 'Sans Serif'],
+    ['Raleway', 'Sans Serif'],
+    ['Nunito Sans', 'Sans Serif'],
+    ['IBM Plex Sans', 'Sans Serif'],
+    ['Fira Sans', 'Sans Serif'],
+    ['Ubuntu', 'Sans Serif'],
+    ['Arial', 'Sans Serif'],
+    ['Playfair Display', 'Display'],
+    ['DM Serif Display', 'Display'],
+    ['Oswald', 'Display'],
+    ['Space Grotesk', 'Display'],
+    ['IBM Plex Mono', 'Monospace'],
+    ['Courier New', 'Monospace'],
+  ]
+  const fontButton = document.querySelector('#font-picker-button') as HTMLButtonElement
+  const fontMenu = document.querySelector('#font-picker-menu') as HTMLElement
+  const fontOptions = document.querySelector('#font-options') as HTMLElement
+  const fontSearch = document.querySelector('#font-search') as HTMLInputElement
+  fontSelect.innerHTML = fonts.map(([name]) => `<option value="${name}">${name}</option>`).join('')
+  function renderFonts(query = '') {
+    const q = query.toLowerCase()
+    let last = ''
+    fontOptions.innerHTML =
+      fonts
+        .filter(([name]) => name.toLowerCase().includes(q))
+        .map(([name, category]) => {
+          const heading =
+            category !== last ? `<div class="font-category">${(last = category)}</div>` : ''
+          return `${heading}<button type="button" class="font-option ${fontSelect.value === name ? 'active' : ''}" data-font="${name}" data-category="${category}" style="font-family:'${name}',sans-serif"><span>${name}</span><small>SuratKu · Aa Bb Cc 123</small></button>`
+        })
+        .join('') || '<p class="font-empty">Font tidak ditemukan.</p>'
+  }
+  function chooseFont(name: string, category: string) {
+    fontSelect.value = name
+    ;(document.querySelector('#selected-font') as HTMLElement).textContent = name
+    fontButton.querySelector('small')!.textContent = category
+    fontButton.querySelector('span')!.setAttribute('style', `font-family:'${name}',sans-serif`)
+    fontMenu.hidden = true
+    fontButton.setAttribute('aria-expanded', 'false')
+    renderFonts()
+    updatePreview()
+  }
+  fontButton.addEventListener('click', () => {
+    fontMenu.hidden = !fontMenu.hidden
+    fontButton.setAttribute('aria-expanded', String(!fontMenu.hidden))
+    if (!fontMenu.hidden) {
+      renderFonts()
+      setTimeout(() => fontSearch.focus(), 0)
+    }
+  })
+  fontSearch.addEventListener('input', () => renderFonts(fontSearch.value))
+  fontOptions.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('[data-font]') as HTMLElement | null
+    if (b) chooseFont(b.dataset.font!, b.dataset.category!)
+  })
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('.font-control')) {
+      fontMenu.hidden = true
+      fontButton.setAttribute('aria-expanded', 'false')
+    }
+  })
+  const input = (id: string) =>
+    document.querySelector(`#${id}`) as HTMLInputElement | HTMLTextAreaElement
+  const set = (id: string, value: string) =>
+    ((document.querySelector(`#${id}`) as HTMLElement).textContent = value)
+  const formatDate = (value: string) =>
+    value
+      ? new Date(`${value}T12:00:00`).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        })
+      : '—'
+  function updatePreview() {
+    set('p-number', input('letter_number').value || '—')
+    set('p-attachment', input('attachment').value || '—')
+    set('p-subject', input('subject').value || '—')
+    set('p-date', `Jakarta, ${formatDate(input('letter_date').value)}`)
+    set('p-recipient', input('recipient_name').value || 'Bapak/Ibu Penerima')
+    set(
+      'p-recipient-company',
+      [input('recipient_title').value, input('recipient_company').value].filter(Boolean).join(', '),
+    )
+    set('p-address', input('recipient_address').value || 'di Tempat')
+    set(
+      'p-body',
+      input('body').value || 'Dengan hormat,\n\nIsi surat Anda akan tampil di bagian ini.',
+    )
+    set('p-closing', input('closing').value)
+    set('p-sender', input('sender_name').value || 'Nama Pengirim')
+    set('p-sender-title', input('sender_title').value || 'Jabatan')
+    paper.style.fontFamily = `'${fontSelect.value}', serif`
+    status.textContent = 'Ada perubahan'
+  }
+  form?.addEventListener('input', updatePreview)
+  async function save(statusValue: 'draft' | 'final') {
+    if (statusValue === 'final' && !form.reportValidity()) return
     const {
       data: { user },
     } = await supabase.auth.getUser()
-
-    if (!user) {
-      window.location.href = '/login'
+    if (!user) return
+    const fd = new FormData(form)
+    const payload = {
+      user_id: user.id,
+      type: 'resmi',
+      letter_number: fd.get('letter_number') || null,
+      letter_date: fd.get('letter_date'),
+      attachment: fd.get('attachment') || null,
+      subject: fd.get('subject') || 'Tanpa perihal',
+      recipient_name: fd.get('recipient_name') || 'Belum diisi',
+      recipient_title: fd.get('recipient_title') || null,
+      recipient_company: fd.get('recipient_company') || null,
+      recipient_address: fd.get('recipient_address') || null,
+      body: fd.get('body') || 'Belum diisi',
+      closing: fd.get('closing') || null,
+      sender_name: fd.get('sender_name') || 'Belum diisi',
+      sender_title: fd.get('sender_title') || null,
+      font_family: fontSelect.value,
+      logo_url: logoUrl || null,
+      status: statusValue,
+      updated_at: new Date().toISOString(),
+    }
+    status.textContent = 'Menyimpan…'
+    const query = editingId
+      ? supabase.from('letters').update(payload).eq('id', editingId)
+      : supabase.from('letters').insert(payload).select('id').single()
+    const { data, error } = await query
+    if (error) {
+      status.textContent = 'Gagal disimpan'
+      message.textContent = 'Jalankan migration document builder terbaru di Supabase.'
+      message.className = 'message error'
+      return
+    }
+    if (!editingId && data && 'id' in data) {
+      editingId = data.id
+      history.replaceState({}, '', `?id=${editingId}`)
+    }
+    status.textContent = statusValue === 'final' ? 'Tersimpan sebagai final' : 'Draf tersimpan'
+    message.textContent = 'Surat berhasil disimpan ke riwayat.'
+    message.className = 'message success'
+  }
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault()
+    save('final')
+  })
+  document.querySelector('#draft-button')?.addEventListener('click', () => save('draft'))
+  document.querySelector('#print-button')?.addEventListener('click', () => window.print())
+  document.querySelectorAll('[contenteditable][data-field]').forEach((el) =>
+    el.addEventListener('input', () => {
+      const field = (el as HTMLElement).dataset.field!
+      input(field).value = ((el as HTMLElement).innerText || '').replace(/^—$/, '')
+      status.textContent = 'Ada perubahan'
+    }),
+  )
+  templateSelect?.addEventListener('change', () => {
+    const t = templates.find((x) => x.id === templateSelect.value)
+    if (!t) return
+    input('subject').value = t.subject || ''
+    input('body').value = t.body || ''
+    input('closing').value = t.closing || ''
+    const selected = fonts.find(([name]) => name === (t.font_family || 'Lora')) || fonts[0]
+    chooseFont(selected[0], selected[1])
+  })
+  document.querySelector('#save-template')?.addEventListener('click', async () => {
+    const name = prompt('Nama template ini:')
+    if (!name) return
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+    const { error } = await supabase.from('letter_templates').insert({
+      user_id: user.id,
+      name,
+      subject: input('subject').value,
+      body: input('body').value,
+      closing: input('closing').value,
+      font_family: fontSelect.value,
+    })
+    message.textContent = error
+      ? 'Template gagal disimpan. Jalankan migration terbaru.'
+      : 'Template baru berhasil disimpan.'
+    message.className = `message ${error ? 'error' : 'success'}`
+    if (!error) loadTemplates()
+  })
+  async function loadTemplates() {
+    const { data } = await supabase
+      .from('letter_templates')
+      .select('*')
+      .order('created_at', { ascending: false })
+    templates = data || []
+    templateSelect.innerHTML =
+      '<option value="">Surat kosong</option>' +
+      templates.map((t) => `<option value="${t.id}">${t.name}</option>`).join('')
+    if (initialTemplateId && !editingId) {
+      templateSelect.value = initialTemplateId
+      templateSelect.dispatchEvent(new Event('change'))
     }
   }
-
-  checkUser()
-
-  const form = document.getElementById(
-    'letter-form'
-  ) as HTMLFormElement | null
-
-  form?.addEventListener('submit', (event) => {
-    event.preventDefault()
-
-    const formData = new FormData(form)
-
-    const data = Object.fromEntries(formData.entries())
-
-    console.log('Data surat:', data)
-
-    alert('Form surat berhasil diisi.')
-  })
+  const presetCopy: Record<
+    string,
+    { title: string; subject: string; body: string; closing: string }
+  > = {
+    penawaran: {
+      title: 'Surat Penawaran',
+      subject: 'Penawaran Produk dan Layanan',
+      body: 'Dengan hormat,\n\nMelalui surat ini, kami bermaksud menawarkan produk dan layanan perusahaan kami yang dapat disesuaikan dengan kebutuhan Bapak/Ibu. Rincian ruang lingkup, harga, serta ketentuan pelaksanaan terlampir pada dokumen penawaran ini.',
+      closing:
+        'Kami berharap dapat memperoleh kesempatan untuk menjelaskan penawaran ini lebih lanjut. Atas perhatian dan kerja samanya, kami ucapkan terima kasih.',
+    },
+    permohonan: {
+      title: 'Surat Permohonan',
+      subject: 'Permohonan Kerja Sama',
+      body: 'Dengan hormat,\n\nSehubungan dengan rencana kegiatan perusahaan kami, melalui surat ini kami mengajukan permohonan kepada Bapak/Ibu untuk dapat memberikan dukungan dan persetujuan atas kegiatan tersebut.',
+      closing:
+        'Demikian permohonan ini kami sampaikan. Atas perhatian dan persetujuannya, kami ucapkan terima kasih.',
+    },
+    undangan: {
+      title: 'Surat Undangan',
+      subject: 'Undangan Pertemuan',
+      body: 'Dengan hormat,\n\nKami mengundang Bapak/Ibu untuk menghadiri pertemuan yang akan membahas agenda kerja sama dan tindak lanjut kegiatan perusahaan. Informasi waktu dan tempat akan kami sampaikan dalam lampiran.',
+      closing: 'Demikian undangan ini kami sampaikan. Kehadiran Bapak/Ibu sangat kami harapkan.',
+    },
+    pemberitahuan: {
+      title: 'Surat Pemberitahuan',
+      subject: 'Pemberitahuan Resmi',
+      body: 'Dengan hormat,\n\nBersama surat ini kami menyampaikan pemberitahuan mengenai perubahan kegiatan dan kebijakan perusahaan yang berlaku sejak tanggal surat ini diterbitkan.',
+      closing:
+        'Demikian pemberitahuan ini disampaikan untuk diketahui dan dilaksanakan sebagaimana mestinya.',
+    },
+    kerjasama: {
+      title: 'Surat Kerja Sama',
+      subject: 'Usulan Kerja Sama',
+      body: 'Dengan hormat,\n\nKami melihat adanya peluang kolaborasi yang saling menguntungkan antara perusahaan kami dan instansi Bapak/Ibu. Kami mengusulkan pembahasan lebih lanjut mengenai ruang lingkup, tanggung jawab, dan target kerja sama.',
+      closing: 'Kami menantikan kesempatan untuk mendiskusikan usulan ini lebih lanjut.',
+    },
+    balasan: {
+      title: 'Surat Balasan Resmi',
+      subject: 'Tanggapan atas Surat',
+      body: 'Dengan hormat,\n\nMenindaklanjuti surat Bapak/Ibu, dengan ini kami menyampaikan bahwa permohonan tersebut telah kami terima dan pelajari. Berikut adalah tanggapan resmi perusahaan kami.',
+      closing:
+        'Demikian tanggapan ini kami sampaikan. Terima kasih atas perhatian dan kerja samanya.',
+    },
+    'keterangan-kerja': {
+      title: 'Surat Keterangan Kerja',
+      subject: 'Keterangan Status Karyawan',
+      body: 'Dengan hormat,\n\nDengan ini kami menerangkan bahwa pihak yang disebutkan dalam surat ini benar tercatat sebagai karyawan perusahaan kami dan masih aktif bekerja hingga surat ini diterbitkan.',
+      closing: 'Surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.',
+    },
+    pengangkatan: {
+      title: 'Surat Pengangkatan',
+      subject: 'Pengangkatan Karyawan',
+      body: 'Dengan hormat,\n\nBerdasarkan hasil evaluasi dan kebutuhan organisasi, perusahaan menetapkan pengangkatan pihak yang bersangkutan sebagai karyawan pada jabatan yang telah ditentukan, terhitung sejak tanggal berlaku.',
+      closing: 'Keputusan ini agar dilaksanakan dengan penuh tanggung jawab.',
+    },
+    mutasi: {
+      title: 'Surat Mutasi',
+      subject: 'Keputusan Mutasi Karyawan',
+      body: 'Dengan hormat,\n\nBerdasarkan kebutuhan organisasi dan pengembangan karyawan, perusahaan menetapkan pemindahan unit, jabatan, atau lokasi kerja pihak yang bersangkutan terhitung sejak tanggal yang ditetapkan.',
+      closing: 'Demikian keputusan ini dibuat untuk dilaksanakan sebagaimana mestinya.',
+    },
+    promosi: {
+      title: 'Surat Promosi',
+      subject: 'Keputusan Promosi Jabatan',
+      body: 'Dengan hormat,\n\nBerdasarkan evaluasi kinerja dan pertimbangan manajemen, perusahaan menetapkan promosi jabatan kepada pihak yang bersangkutan terhitung sejak tanggal yang ditentukan.',
+      closing:
+        'Semoga amanah baru ini dapat dijalankan dengan profesional dan penuh tanggung jawab.',
+    },
+    peringatan: {
+      title: 'Surat Peringatan',
+      subject: 'Surat Peringatan Karyawan',
+      body: 'Dengan hormat,\n\nBerdasarkan hasil evaluasi dan catatan pelanggaran terhadap ketentuan perusahaan, manajemen memberikan surat peringatan agar pihak yang bersangkutan segera melakukan perbaikan.',
+      closing:
+        'Surat peringatan ini berlaku sesuai ketentuan perusahaan dan agar diperhatikan dengan sungguh-sungguh.',
+    },
+    phk: {
+      title: 'Surat Pemutusan Kerja',
+      subject: 'Pemberitahuan Pemutusan Hubungan Kerja',
+      body: 'Dengan hormat,\n\nBerdasarkan hasil evaluasi serta ketentuan perusahaan yang berlaku, dengan ini kami memberitahukan berakhirnya hubungan kerja terhitung sejak tanggal yang ditetapkan.',
+      closing:
+        'Hak dan kewajiban para pihak akan diselesaikan sesuai peraturan dan perjanjian yang berlaku.',
+    },
+    memo: {
+      title: 'Memo Internal',
+      subject: 'Memo Internal Perusahaan',
+      body: 'Kepada seluruh pihak terkait,\n\nMelalui memo ini kami menyampaikan arahan dan informasi internal yang perlu menjadi perhatian serta ditindaklanjuti oleh unit kerja terkait.',
+      closing: 'Harap dilaksanakan dengan penuh tanggung jawab.',
+    },
+    tugas: {
+      title: 'Surat Tugas',
+      subject: 'Penugasan Karyawan',
+      body: 'Dengan ini perusahaan memberikan tugas kepada pihak yang tercantum dalam surat untuk melaksanakan kegiatan sesuai ruang lingkup, waktu, dan lokasi yang telah ditentukan.',
+      closing: 'Surat tugas ini dibuat agar dapat dilaksanakan sebagaimana mestinya.',
+    },
+    keputusan: {
+      title: 'Surat Keputusan',
+      subject: 'Keputusan Manajemen',
+      body: 'Setelah mempertimbangkan kebutuhan dan kepentingan perusahaan, manajemen memutuskan dan menetapkan ketentuan sebagaimana tercantum dalam surat ini.',
+      closing: 'Keputusan ini berlaku sejak tanggal ditetapkan.',
+    },
+    edaran: {
+      title: 'Surat Edaran',
+      subject: 'Edaran Kebijakan Perusahaan',
+      body: 'Kepada seluruh karyawan,\n\nSehubungan dengan penerapan kebijakan perusahaan, bersama ini kami menyampaikan ketentuan yang wajib diketahui dan dipatuhi oleh seluruh unit kerja.',
+      closing: 'Demikian edaran ini disampaikan untuk menjadi perhatian.',
+    },
+    kuasa: {
+      title: 'Surat Kuasa',
+      subject: 'Pemberian Kuasa',
+      body: 'Yang bertanda tangan di bawah ini memberikan kuasa kepada penerima kuasa untuk bertindak atas nama perusahaan dalam ruang lingkup yang disebutkan pada surat ini.',
+      closing: 'Surat kuasa ini dibuat untuk dipergunakan sebagaimana mestinya.',
+    },
+    'berita-acara': {
+      title: 'Berita Acara',
+      subject: 'Berita Acara Pelaksanaan Kegiatan',
+      body: 'Pada tanggal sebagaimana tercantum dalam surat ini, para pihak telah melaksanakan kegiatan dan menyepakati hasil sebagaimana dijelaskan dalam berita acara ini.',
+      closing:
+        'Berita acara ini dibuat dengan sebenar-benarnya untuk dipergunakan sebagaimana mestinya.',
+    },
+    tagihan: {
+      title: 'Surat Penagihan',
+      subject: 'Pengingat Pembayaran',
+      body: 'Dengan hormat,\n\nBerdasarkan catatan administrasi kami, terdapat pembayaran yang telah melewati tanggal jatuh tempo. Kami mohon agar pembayaran dapat diselesaikan sesuai rincian tagihan terlampir.',
+      closing:
+        'Apabila pembayaran telah dilakukan, mohon abaikan surat ini dan kirimkan bukti pembayaran kepada kami.',
+    },
+    konfirmasi: {
+      title: 'Surat Konfirmasi',
+      subject: 'Konfirmasi Kesepakatan',
+      body: 'Dengan hormat,\n\nMelalui surat ini kami mengonfirmasi hasil pembahasan dan kesepakatan para pihak sebagaimana telah dibicarakan sebelumnya.',
+      closing: 'Mohon konfirmasi kembali apabila terdapat informasi yang perlu disesuaikan.',
+    },
+    pesanan: {
+      title: 'Surat Pesanan',
+      subject: 'Pemesanan Barang atau Jasa',
+      body: 'Dengan hormat,\n\nBerdasarkan penawaran yang telah kami terima, dengan ini kami melakukan pemesanan barang atau jasa sesuai spesifikasi, jumlah, dan jadwal yang terlampir.',
+      closing: 'Mohon konfirmasi ketersediaan dan jadwal pemenuhan pesanan ini.',
+    },
+    komplain: {
+      title: 'Surat Keluhan Bisnis',
+      subject: 'Keluhan atas Produk atau Layanan',
+      body: 'Dengan hormat,\n\nKami menyampaikan keluhan terkait produk atau layanan yang kami terima karena belum sesuai dengan spesifikasi dan kesepakatan para pihak.',
+      closing: 'Kami mengharapkan penyelesaian dan tindak lanjut dalam waktu yang wajar.',
+    },
+    rekomendasi: {
+      title: 'Surat Rekomendasi',
+      subject: 'Rekomendasi Profesional',
+      body: 'Dengan hormat,\n\nBerdasarkan pengalaman profesional dan hasil evaluasi kami, perusahaan memberikan rekomendasi kepada pihak yang disebutkan dalam surat ini.',
+      closing:
+        'Rekomendasi ini diberikan dengan sebenar-benarnya untuk dipergunakan sebagaimana mestinya.',
+    },
+  }
+  function applyPreset() {
+    const key = routeParams.get('preset')
+    const preset = key ? presetCopy[key] : null
+    if (!preset || editingId) return
+    input('subject').value = preset.subject
+    input('body').value = preset.body
+    input('closing').value = preset.closing
+    document.querySelector('.composer-header h1')!.textContent = preset.title
+  }
+  async function init() {
+    input('letter_date').value = new Date().toISOString().slice(0, 10)
+    applyPreset()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+    input('sender_name').value = user.user_metadata?.full_name || ''
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle()
+    if (profile) {
+      input('sender_name').value = profile.full_name || input('sender_name').value
+      set('p-company', profile.company_name || profile.full_name || 'Nama Perusahaan Anda')
+      set(
+        'p-company-details',
+        [profile.company_address, profile.company_phone].filter(Boolean).join(' · ') ||
+          'Lengkapi identitas di Pengaturan',
+      )
+      logoUrl = profile.logo_url || ''
+    }
+    if (editingId) {
+      const { data: letter } = await supabase
+        .from('letters')
+        .select('*')
+        .eq('id', editingId)
+        .single()
+      if (letter) {
+        Object.entries(letter).forEach(([key, value]) => {
+          const el = document.querySelector(`[name="${key}"]`) as
+            HTMLInputElement | HTMLTextAreaElement | null
+          if (el && value != null) el.value = String(value)
+        })
+        fontSelect.value = letter.font_family || 'Lora'
+        logoUrl = letter.logo_url || logoUrl
+        document.querySelector('.composer-header h1')!.textContent = 'Edit surat'
+      }
+    }
+    const current = fonts.find(([name]) => name === fontSelect.value) || fonts[0]
+    chooseFont(current[0], current[1])
+    const logo = document.querySelector('#p-logo')!
+    if (logoUrl) logo.innerHTML = `<img src="${logoUrl}" alt="Logo perusahaan" />`
+    await loadTemplates()
+    updatePreview()
+  }
+  init()
 </script>

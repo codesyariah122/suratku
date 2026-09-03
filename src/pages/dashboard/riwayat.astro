@@ -1,0 +1,116 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro'
+---
+
+<DashboardLayout title="Riwayat Surat - SuratKu">
+  <section class="page-shell">
+    <header class="page-header">
+      <div>
+        <span class="eyebrow">ARSIP DOKUMEN</span><h1>Riwayat surat</h1><p>
+          Semua surat yang pernah Anda simpan, dalam satu tempat.
+        </p>
+      </div>
+      <a class="primary-button" href="/dashboard/buat/resmi">+ Buat surat</a>
+    </header>
+
+    <div class="toolbar">
+      <label class="search-box"
+        ><span>⌕</span><input
+          id="search"
+          type="search"
+          placeholder="Cari nomor, perihal, atau penerima…"
+        /></label
+      >
+      <select id="status-filter" aria-label="Filter status"
+        ><option value="">Semua status</option><option value="draft">Draf</option><option
+          value="final">Final</option
+        ></select
+      >
+    </div>
+
+    <div id="letters-loading" class="empty-state">Memuat arsip surat…</div>
+    <div id="letters-empty" class="empty-state" hidden>
+      <div class="empty-icon">⌁</div><h2>Belum ada surat</h2><p>
+        Surat yang Anda simpan akan muncul di sini.
+      </p><a class="primary-button" href="/dashboard/buat/resmi">Buat surat pertama</a>
+    </div>
+    <div id="letters-list" class="letters-list" hidden></div>
+  </section>
+</DashboardLayout>
+
+<script>
+  import { supabase } from '../../lib/supabase'
+  type Letter = {
+    id: string
+    subject: string
+    letter_number: string | null
+    letter_date: string
+    recipient_name: string
+    recipient_company: string | null
+    status: string
+    created_at: string
+  }
+  let letters: Letter[] = []
+  const list = document.querySelector('#letters-list') as HTMLDivElement
+  const loading = document.querySelector('#letters-loading') as HTMLDivElement
+  const empty = document.querySelector('#letters-empty') as HTMLDivElement
+  const search = document.querySelector('#search') as HTMLInputElement
+  const statusFilter = document.querySelector('#status-filter') as HTMLSelectElement
+  const esc = (value: string | null) =>
+    (value || '').replace(
+      /[&<>'"]/g,
+      (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[c] || c,
+    )
+
+  function render() {
+    const q = search.value.toLowerCase().trim()
+    const status = statusFilter.value
+    const rows = letters.filter(
+      (x) =>
+        (!status || x.status === status) &&
+        [x.subject, x.letter_number, x.recipient_name, x.recipient_company].some((v) =>
+          v?.toLowerCase().includes(q),
+        ),
+    )
+    list.innerHTML = rows
+      .map(
+        (x) =>
+          `<article class="letter-row"><div class="letter-file-icon">▤</div><div class="letter-main"><strong>${esc(x.subject)}</strong><span>${esc(x.letter_number) || 'Tanpa nomor'} · ${new Date(x.letter_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div><div class="letter-recipient"><small>DITUJUKAN KEPADA</small><span>${esc(x.recipient_name)}${x.recipient_company ? ` · ${esc(x.recipient_company)}` : ''}</span></div><span class="status-pill ${x.status}">${x.status === 'final' ? 'Final' : 'Draf'}</span><a class="icon-button edit-letter" href="/dashboard/buat/resmi?id=${x.id}" aria-label="Edit surat">✎</a><button class="icon-button delete-letter" data-id="${x.id}" aria-label="Hapus surat">×</button></article>`,
+      )
+      .join('')
+    list.hidden = rows.length === 0
+    empty.hidden = rows.length !== 0
+  }
+
+  async function loadLetters() {
+    const { data, error } = await supabase
+      .from('letters')
+      .select(
+        'id,subject,letter_number,letter_date,recipient_name,recipient_company,status,created_at',
+      )
+      .order('created_at', { ascending: false })
+    loading.hidden = true
+    if (error) {
+      empty.hidden = false
+      empty.querySelector('h2')!.textContent = 'Database belum siap'
+      empty.querySelector('p')!.textContent =
+        'Jalankan file migration Supabase yang tersedia di project.'
+      return
+    }
+    letters = data || []
+    render()
+  }
+  search?.addEventListener('input', render)
+  statusFilter?.addEventListener('change', render)
+  list?.addEventListener('click', async (e) => {
+    const button = (e.target as HTMLElement).closest('.delete-letter') as HTMLButtonElement | null
+    if (!button || !confirm('Hapus surat ini?')) return
+    button.disabled = true
+    const { error } = await supabase.from('letters').delete().eq('id', button.dataset.id!)
+    if (!error) {
+      letters = letters.filter((x) => x.id !== button.dataset.id)
+      render()
+    } else button.disabled = false
+  })
+  loadLetters()
+</script>

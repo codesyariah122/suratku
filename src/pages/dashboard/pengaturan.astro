@@ -1,0 +1,144 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro'
+---
+
+<DashboardLayout title="Identitas Perusahaan - SuratKu">
+  <section class="page-shell narrow-shell">
+    <header class="page-header">
+      <div>
+        <span class="eyebrow">PENGATURAN</span><h1>Identitas pengirim</h1><p>
+          Data ini akan otomatis dipakai pada surat baru Anda.
+        </p>
+      </div>
+    </header>
+    <form id="profile-form" class="panel-card">
+      <div class="form-card-header">
+        <h2>Profil Anda</h2><p>Gunakan identitas personal atau perusahaan.</p>
+      </div>
+      <div class="logo-setting">
+        <div id="logo-preview" class="logo-preview">LOGO</div><div>
+          <label class="upload-button" for="company_logo">Unggah logo perusahaan</label><input
+            id="company_logo"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/svg+xml"
+            hidden
+          /><p>PNG, JPG, WebP, atau SVG · maksimal 2 MB</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="full_name">Nama lengkap</label><input
+            id="full_name"
+            name="full_name"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="company_name">Nama perusahaan</label><input
+            id="company_name"
+            name="company_name"
+            placeholder="PT Nama Perusahaan"
+          />
+        </div>
+        <div class="form-group form-group-full">
+          <label for="company_address">Alamat</label><textarea
+            id="company_address"
+            name="company_address"
+            rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="company_phone">Nomor telepon</label><input
+            id="company_phone"
+            name="company_phone"
+            type="tel"
+          />
+        </div>
+        <div class="form-group">
+          <label for="email">Email akun</label><input id="email" disabled />
+        </div>
+      </div>
+      <div class="form-footer">
+        <p id="profile-message" class="message"></p><button class="primary-button" type="submit"
+          >Simpan perubahan</button
+        >
+      </div>
+    </form>
+  </section>
+</DashboardLayout>
+
+<script>
+  import { supabase } from '../../lib/supabase'
+  const form = document.querySelector('#profile-form') as HTMLFormElement
+  const message = document.querySelector('#profile-message') as HTMLParagraphElement
+  let logoUrl = ''
+  const logoInput = document.querySelector('#company_logo') as HTMLInputElement
+  const logoPreview = document.querySelector('#logo-preview') as HTMLDivElement
+  function showLogo(url: string) {
+    logoPreview.innerHTML = url ? `<img src="${url}" alt="Logo perusahaan" />` : 'LOGO'
+  }
+  async function load() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+    ;(document.querySelector('#email') as HTMLInputElement).value = user.email || ''
+    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+    ;(document.querySelector('#full_name') as HTMLInputElement).value =
+      data?.full_name || user.user_metadata?.full_name || ''
+    ;(document.querySelector('#company_name') as HTMLInputElement).value = data?.company_name || ''
+    ;(document.querySelector('#company_address') as HTMLTextAreaElement).value =
+      data?.company_address || ''
+    ;(document.querySelector('#company_phone') as HTMLInputElement).value =
+      data?.company_phone || ''
+    logoUrl = data?.logo_url || ''
+    showLogo(logoUrl)
+  }
+  logoInput?.addEventListener('change', () => {
+    const file = logoInput.files?.[0]
+    if (file) showLogo(URL.createObjectURL(file))
+  })
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+    const file = logoInput.files?.[0]
+    if (file) {
+      if (file.size > 2097152) {
+        message.textContent = 'Ukuran logo maksimal 2 MB.'
+        message.className = 'message error'
+        return
+      }
+      const ext = file.name.split('.').pop()
+      const path = `${user.id}/logo.${ext}`
+      const { error: uploadError } = await supabase.storage
+        .from('company-assets')
+        .upload(path, file, { upsert: true })
+      if (uploadError) {
+        message.textContent = 'Logo gagal diunggah. Jalankan migration document builder.'
+        message.className = 'message error'
+        return
+      }
+      logoUrl =
+        supabase.storage.from('company-assets').getPublicUrl(path).data.publicUrl +
+        `?v=${Date.now()}`
+    }
+    const fd = new FormData(form)
+    const payload = {
+      id: user.id,
+      full_name: fd.get('full_name'),
+      company_name: fd.get('company_name'),
+      company_address: fd.get('company_address'),
+      company_phone: fd.get('company_phone'),
+      logo_url: logoUrl || null,
+      updated_at: new Date().toISOString(),
+    }
+    const { error } = await supabase.from('profiles').upsert(payload)
+    message.textContent = error
+      ? 'Gagal menyimpan. Jalankan migration document builder.'
+      : 'Perubahan berhasil disimpan.'
+    message.className = `message ${error ? 'error' : 'success'}`
+  })
+  load()
+</script>

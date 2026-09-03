@@ -7,31 +7,17 @@ import Layout from '../layouts/Layout.astro'
     <div class="auth-card">
       <h1>Buat Akun</h1>
 
-      <p class="auth-description">
-        Silakan buat akun untuk melanjutkan.
-      </p>
+      <p class="auth-description">Silakan buat akun untuk melanjutkan.</p>
 
       <form id="register-form">
         <div class="form-group">
           <label for="full_name">Nama Lengkap</label>
-          <input
-            type="text"
-            id="full_name"
-            name="full_name"
-            placeholder="Nama lengkap"
-            required
-          />
+          <input type="text" id="full_name" name="full_name" placeholder="Nama lengkap" required />
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="email@example.com"
-            required
-          />
+          <input type="email" id="email" name="email" placeholder="email@example.com" required />
         </div>
 
         <div class="form-group">
@@ -58,9 +44,7 @@ import Layout from '../layouts/Layout.astro'
           />
         </div>
 
-        <button type="submit" id="register-button">
-          Daftar
-        </button>
+        <button type="submit" id="register-button"> Daftar </button>
 
         <p id="register-message" class="message"></p>
       </form>
@@ -83,17 +67,11 @@ import Layout from '../layouts/Layout.astro'
   form?.addEventListener('submit', async (event) => {
     event.preventDefault()
 
-    const fullName = (
-      document.querySelector('#full_name') as HTMLInputElement
-    ).value.trim()
+    const fullName = (document.querySelector('#full_name') as HTMLInputElement).value.trim()
 
-    const email = (
-      document.querySelector('#email') as HTMLInputElement
-    ).value.trim()
+    const email = (document.querySelector('#email') as HTMLInputElement).value.trim()
 
-    const password = (
-      document.querySelector('#password') as HTMLInputElement
-    ).value
+    const password = (document.querySelector('#password') as HTMLInputElement).value
 
     const passwordConfirmation = (
       document.querySelector('#password_confirmation') as HTMLInputElement
@@ -143,8 +121,7 @@ import Layout from '../layouts/Layout.astro'
     }
 
     // Jika email confirmation aktif.
-    message.textContent =
-      'Registrasi berhasil. Silakan cek email untuk konfirmasi akun.'
+    message.textContent = 'Registrasi berhasil. Silakan cek email untuk konfirmasi akun.'
     message.classList.add('success')
 
     form.reset()

@@ -5,7 +5,6 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
 <DashboardLayout title="Dashboard - SuratKu">
   <main class="dashboard-page">
     <div class="dashboard-container">
-
       <!-- HEADER -->
       <header class="dashboard-header">
         <div>
@@ -13,90 +12,57 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
 
           <h1>Dashboard</h1>
 
-          <p class="dashboard-description">
-            Selamat datang di SuratKu.
-          </p>
+          <p class="dashboard-description">Selamat datang di SuratKu.</p>
         </div>
-
-        <button
-          type="button"
-          id="logout-button"
-          class="logout-button"
-        >
-          Logout
-        </button>
       </header>
 
-      <!-- USER -->
-      <section class="dashboard-card">
-        <span class="dashboard-label">
-          AKUN ANDA
-        </span>
-
-        <h2 id="user-name">
-          Memuat...
-        </h2>
-
-        <p id="user-email">
-          Memuat...
-        </p>
+      <section class="welcome-card">
+        <div>
+          <span class="dashboard-label">RUANG KERJA ANDA</span><h2>
+            Selamat datang, <span id="user-name">Pengguna</span>.
+          </h2><p>Buat dokumen formal dengan cepat, konsisten, dan siap dikirim.</p>
+        </div>
+        <a href="/dashboard/buat/resmi" class="primary-button">+ Buat surat baru</a>
       </section>
 
-      <!-- SURAT -->
-      <section class="dashboard-card">
-        <span class="dashboard-label">
-          SURAT
-        </span>
-
-        <h2>Mulai Buat Surat</h2>
-
-        <p>
-          Buat surat resmi dengan template yang sudah tersedia.
-        </p>
-
-        <a
-          href="/dashboard/buat"
-          class="dashboard-action"
-        >
-          Buat Surat
-        </a>
+      <section class="stats-grid">
+        <article class="stat-card">
+          <span>Total surat</span><strong id="stat-total">—</strong><small>Dokumen tersimpan</small>
+        </article>
+        <article class="stat-card">
+          <span>Surat final</span><strong id="stat-final">—</strong><small>Siap digunakan</small>
+        </article>
+        <article class="stat-card">
+          <span>Masih draf</span><strong id="stat-draft">—</strong><small>Perlu diselesaikan</small>
+        </article>
       </section>
 
       <!-- MENU -->
       <div class="dashboard-menu">
-
         <a href="/dashboard/buat" class="dashboard-menu-card">
-          <span class="dashboard-menu-number">01</span>
+          <span class="dashboard-menu-number">✎</span>
 
           <h3>Buat Surat</h3>
 
-          <p>
-            Buat surat baru menggunakan template SuratKu.
-          </p>
+          <p>Buat surat baru menggunakan template SuratKu.</p>
         </a>
 
         <a href="/dashboard/riwayat" class="dashboard-menu-card">
-          <span class="dashboard-menu-number">02</span>
+          <span class="dashboard-menu-number">▤</span>
 
           <h3>Riwayat Surat</h3>
 
-          <p>
-            Lihat dan kelola surat yang sudah dibuat.
-          </p>
+          <p>Lihat dan kelola surat yang sudah dibuat.</p>
         </a>
 
         <a href="/dashboard/pengaturan" class="dashboard-menu-card">
-          <span class="dashboard-menu-number">03</span>
+          <span class="dashboard-menu-number">⌘</span>
 
           <h3>Pengaturan</h3>
 
-          <p>
-            Kelola informasi akun dan profil kamu.
-          </p>
+          <p>Kelola informasi akun dan profil kamu.</p>
         </a>
-
       </div>
-
     </div>
   </main>
 </DashboardLayout>
@@ -105,8 +71,9 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
   import { supabase } from '../../lib/supabase'
 
   const userName = document.querySelector('#user-name')
-  const userEmail = document.querySelector('#user-email')
-  const logoutButton = document.querySelector('#logout-button')
+  const statTotal = document.querySelector('#stat-total')
+  const statFinal = document.querySelector('#stat-final')
+  const statDraft = document.querySelector('#stat-draft')
 
   async function loadUser() {
     const {
@@ -119,35 +86,21 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
       return
     }
 
-    const fullName =
-      user.user_metadata?.full_name || 'Pengguna SuratKu'
+    const fullName = user.user_metadata?.full_name || 'Pengguna SuratKu'
 
     if (userName) {
       userName.textContent = fullName
     }
 
-    if (userEmail) {
-      userEmail.textContent = user.email || ''
+    const { data: letters } = await supabase.from('letters').select('status')
+    if (letters) {
+      if (statTotal) statTotal.textContent = String(letters.length)
+      if (statFinal)
+        statFinal.textContent = String(letters.filter((x) => x.status === 'final').length)
+      if (statDraft)
+        statDraft.textContent = String(letters.filter((x) => x.status === 'draft').length)
     }
   }
-
-  logoutButton?.addEventListener('click', async () => {
-    logoutButton.textContent = 'Logout...'
-    logoutButton.setAttribute('disabled', 'true')
-
-    const { error } = await supabase.auth.signOut()
-
-    if (error) {
-      console.error('Logout error:', error)
-
-      logoutButton.textContent = 'Logout'
-      logoutButton.removeAttribute('disabled')
-
-      return
-    }
-
-    window.location.href = '/login'
-  })
 
   loadUser()
 </script>

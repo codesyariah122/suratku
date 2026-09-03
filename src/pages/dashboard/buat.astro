@@ -1,169 +1,126 @@
 ---
 import DashboardLayout from '../../layouts/DashboardLayout.astro'
+
+const groups = [
+  {
+    name: 'Korespondensi eksternal',
+    description: 'Komunikasi resmi dengan klien, vendor, dan mitra.',
+    items: [
+      ['penawaran', 'Surat Penawaran', 'Proposal harga atau layanan', '↗'],
+      ['permohonan', 'Surat Permohonan', 'Permintaan resmi kepada pihak lain', '✦'],
+      ['undangan', 'Surat Undangan', 'Rapat, acara, atau pertemuan', '◫'],
+      ['pemberitahuan', 'Surat Pemberitahuan', 'Informasi resmi kepada pihak terkait', '◉'],
+      ['kerjasama', 'Surat Kerja Sama', 'Pembuka atau tindak lanjut kemitraan', '◇'],
+      ['balasan', 'Surat Balasan Resmi', 'Jawaban atas surat yang diterima', '↩'],
+    ],
+  },
+  {
+    name: 'Human Resources',
+    description: 'Administrasi dan komunikasi ketenagakerjaan.',
+    items: [
+      ['keterangan-kerja', 'Surat Keterangan Kerja', 'Konfirmasi status karyawan', '▣'],
+      ['pengangkatan', 'Surat Pengangkatan', 'Pengangkatan pegawai atau jabatan', '↑'],
+      ['mutasi', 'Surat Mutasi', 'Perubahan unit atau lokasi kerja', '⇄'],
+      ['promosi', 'Surat Promosi', 'Kenaikan jabatan karyawan', '△'],
+      ['peringatan', 'Surat Peringatan', 'Peringatan dan tindakan disiplin', '!'],
+      ['phk', 'Surat Pemutusan Kerja', 'Pemberitahuan berakhirnya hubungan kerja', '⊘'],
+    ],
+  },
+  {
+    name: 'Internal perusahaan',
+    description: 'Dokumen operasional untuk organisasi dan tim.',
+    items: [
+      ['memo', 'Memo Internal', 'Arahan atau informasi antar divisi', 'M'],
+      ['tugas', 'Surat Tugas', 'Penugasan pegawai atau tim', '✓'],
+      ['keputusan', 'Surat Keputusan', 'Ketetapan resmi perusahaan', '§'],
+      ['edaran', 'Surat Edaran', 'Informasi untuk banyak penerima', '◎'],
+      ['kuasa', 'Surat Kuasa', 'Pelimpahan kewenangan tertentu', '⌘'],
+      ['berita-acara', 'Berita Acara', 'Dokumentasi kegiatan atau serah terima', '≡'],
+    ],
+  },
+  {
+    name: 'Keuangan & komersial',
+    description: 'Dokumen penagihan dan administrasi bisnis.',
+    items: [
+      ['tagihan', 'Surat Penagihan', 'Pengingat pembayaran invoice', 'Rp'],
+      ['konfirmasi', 'Surat Konfirmasi', 'Konfirmasi transaksi atau kesepakatan', '✓'],
+      ['pesanan', 'Surat Pesanan', 'Pemesanan barang atau jasa', '□'],
+      ['komplain', 'Surat Keluhan Bisnis', 'Keluhan resmi kepada vendor', '!'],
+      ['rekomendasi', 'Surat Rekomendasi', 'Rekomendasi profesional perusahaan', '★'],
+      ['resmi', 'Surat Resmi Kosong', 'Mulai dari format formal standar', '+'],
+    ],
+  },
+]
 ---
 
-<DashboardLayout title="Buat Surat - SuratKu">
-  <main class="dashboard-page">
-    <div class="dashboard-container">
-
-      <!-- HEADER -->
-      <header class="dashboard-header">
-        <div>
-          <span class="dashboard-brand">SuratKu</span>
-
-          <h1>Buat Surat</h1>
-
-          <p class="dashboard-description">
-            Pilih template surat yang ingin kamu buat.
-          </p>
-        </div>
-
-        <a
-          href="/dashboard"
-          class="back-button"
-        >
-          Kembali
-        </a>
-      </header>
-
-      <!-- TEMPLATE -->
-      <section class="template-section">
-
-        <div class="section-heading">
-          <span class="dashboard-label">
-            TEMPLATE SURAT
-          </span>
-
-          <h2>
-            Pilih jenis surat
-          </h2>
-
-          <p>
-            Mulai dengan memilih template yang sesuai dengan kebutuhanmu.
-          </p>
-        </div>
-
-        <div class="template-grid">
-
-          <!-- SURAT RESMI -->
-          <a
-  href="/dashboard/buat/resmi"
-  class="template-card"
->
-            <span class="template-number">
-              01
-            </span>
-
-            <div class="template-content">
-              <h3>
-                Surat Resmi
-              </h3>
-
-              <p>
-                Template untuk membuat surat resmi
-                dengan format yang rapi dan profesional.
-              </p>
-            </div>
-
-            <span class="template-arrow">
-              →
-            </span>
-          </a>
-
-          <!-- SURAT UNDANGAN -->
-          <a
-            href="/dashboard/buat?template=undangan"
-            class="template-card"
-          >
-            <span class="template-number">
-              02
-            </span>
-
-            <div class="template-content">
-              <h3>
-                Surat Undangan
-              </h3>
-
-              <p>
-                Template untuk membuat surat undangan
-                kegiatan, acara, atau pertemuan.
-              </p>
-            </div>
-
-            <span class="template-arrow">
-              →
-            </span>
-          </a>
-
-          <!-- SURAT KETERANGAN -->
-          <a
-            href="/dashboard/buat?template=keterangan"
-            class="template-card"
-          >
-            <span class="template-number">
-              03
-            </span>
-
-            <div class="template-content">
-              <h3>
-                Surat Keterangan
-              </h3>
-
-              <p>
-                Template untuk membuat berbagai
-                macam surat keterangan.
-              </p>
-            </div>
-
-            <span class="template-arrow">
-              →
-            </span>
-          </a>
-
-          <!-- SURAT PERMOHONAN -->
-          <a
-            href="/dashboard/buat?template=permohonan"
-            class="template-card"
-          >
-            <span class="template-number">
-              04
-            </span>
-
-            <div class="template-content">
-              <h3>
-                Surat Permohonan
-              </h3>
-
-              <p>
-                Template untuk membuat surat
-                permohonan secara formal.
-              </p>
-            </div>
-
-            <span class="template-arrow">
-              →
-            </span>
-          </a>
-
-        </div>
-      </section>
-
+<DashboardLayout title="Katalog Surat - SuratKu">
+  <section class="page-shell catalog-shell">
+    <header class="page-header">
+      <div>
+        <span class="eyebrow">KATALOG TEMPLATE</span><h1>Buat surat perusahaan</h1><p>
+          Pilih format siap pakai atau mulai dari template milik Anda.
+        </p>
+      </div><a href="/dashboard/templates" class="secondary-button">Kelola template saya</a>
+    </header>
+    <div class="catalog-toolbar">
+      <label class="search-box"
+        ><span>⌕</span><input
+          id="catalog-search"
+          type="search"
+          placeholder="Cari jenis surat…"
+        /></label
+      ><span>24 format profesional</span>
     </div>
-  </main>
+    <div id="catalog-groups">
+      {
+        groups.map((group) => (
+          <section class="catalog-group">
+            <>
+              <div class="catalog-group-head">
+                <>
+                  <div>
+                    <>
+                      <h2>{group.name}</h2>
+                      <p>{group.description}</p>
+                    </>
+                  </div>
+                  <span>{group.items.length} template</span>
+                </>
+              </div>
+              <div class="catalog-grid">
+                {group.items.map(([slug, title, desc, icon]) => (
+                  <a
+                    class="catalog-card"
+                    href={`/dashboard/buat/resmi?preset=${slug}`}
+                    data-search={`${title} ${desc}`.toLowerCase()}
+                  >
+                    <span class="catalog-icon">{icon}</span>
+                    <div>
+                      <h3>{title}</h3>
+                      <p>{desc}</p>
+                    </div>
+                    <span class="catalog-arrow">→</span>
+                  </a>
+                ))}
+              </div>
+            </>
+          </section>
+        ))
+      }
+    </div>
+  </section>
 </DashboardLayout>
 
 <script>
-  import { supabase } from '../../lib/supabase'
-
-  async function checkUser() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      window.location.href = '/login'
-    }
-  }
-
-  checkUser()
+  const search = document.querySelector('#catalog-search') as HTMLInputElement
+  search?.addEventListener('input', () => {
+    const q = search.value.toLowerCase().trim()
+    document.querySelectorAll('.catalog-card').forEach((card) => {
+      ;(card as HTMLElement).hidden = !((card as HTMLElement).dataset.search || '').includes(q)
+    })
+    document.querySelectorAll('.catalog-group').forEach((group) => {
+      ;(group as HTMLElement).hidden =
+        group.querySelectorAll('.catalog-card:not([hidden])').length === 0
+    })
+  })
 </script>

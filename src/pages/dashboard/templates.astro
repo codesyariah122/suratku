@@ -1,0 +1,507 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro'
+---
+
+<DashboardLayout title="Template Surat - SuratKu">
+  <section class="page-shell template-page">
+    <header class="page-header">
+      <div>
+        <span class="eyebrow">DOCUMENT BUILDER</span><h1>Template surat</h1><p>
+          Buat format sendiri atau impor dokumen Word untuk dipakai berulang kali.
+        </p>
+      </div><button id="new-template" class="primary-button" type="button">+ Template baru</button>
+    </header>
+    <div class="template-manager-grid">
+      <aside class="panel-card template-library">
+        <div class="library-head">
+          <h2>Template saya</h2><button id="open-import" class="upload-docx" type="button"
+            >Impor .docx</button
+          >
+        </div><label class="search-box"
+          ><span>⌕</span><input
+            id="template-search"
+            type="search"
+            placeholder="Cari template…"
+          /></label
+        ><div id="template-list" class="template-list">
+          <p class="muted-copy">Memuat template…</p>
+        </div>
+      </aside>
+      <main class="panel-card template-editor">
+        <div id="editor-empty" class="empty-state">
+          <div class="empty-icon">▤</div><h2>Pilih atau buat template</h2><p>
+            Template dapat berisi teks biasa dan placeholder dinamis.
+          </p>
+        </div>
+        <form id="template-form" hidden>
+          <div class="template-editor-head">
+            <div class="form-group">
+              <label for="template-name">Nama template</label><input
+                id="template-name"
+                required
+                placeholder="Contoh: Surat Penawaran"
+              />
+            </div><div class="form-group font-control">
+              <label>Font</label><select
+                id="template-font"
+                class="native-font-select"
+                aria-hidden="true"><option value="Lora">Lora</option></select
+              ><button
+                id="template-font-button"
+                class="font-picker-button"
+                type="button"
+                aria-expanded="false"
+                ><span id="template-selected-font">Lora</span><small>Serif</small><b>⌄</b></button
+              ><div id="template-font-menu" class="font-picker-menu" hidden>
+                <div class="font-picker-search">
+                  <input id="template-font-search" type="search" placeholder="Cari font…" />
+                </div><div id="template-font-options" class="font-options"></div>
+              </div>
+            </div>
+          </div>
+          <div class="placeholder-bar">
+            <span>Sisipkan field:</span><button type="button" data-placeholder="nama_penerima"
+              >Nama penerima</button
+            ><button type="button" data-placeholder="nomor_surat">Nomor surat</button><button
+              type="button"
+              data-placeholder="tanggal">Tanggal</button
+            ><button type="button" data-placeholder="nama_perusahaan">Perusahaan</button><button
+              type="button"
+              data-placeholder="nama_pengirim">Pengirim</button
+            >
+          </div>
+          <div class="template-workspace">
+            <div>
+              <label class="editor-label">Konten template</label><div
+                id="template-content"
+                class="rich-template-editor"
+                contenteditable="true"
+              >
+              </div><small
+                >Gunakan placeholder berbentuk <code>&#123;&#123;nama_penerima&#125;&#125;</code>.
+                Format dasar dari Word akan dipertahankan.</small
+              >
+            </div><div>
+              <label class="editor-label">Preview</label><article
+                id="template-preview"
+                class="template-paper"
+              >
+              </article>
+            </div>
+          </div>
+          <div class="template-form-actions">
+            <button id="delete-template" class="danger-button" type="button">Hapus</button><span
+              id="template-message"
+              class="message"></span><a
+              id="use-template"
+              class="secondary-button"
+              href="/dashboard/buat/resmi">Gunakan</a
+            ><button class="primary-button" type="submit">Simpan template</button>
+          </div>
+        </form>
+      </main>
+    </div>
+  </section>
+
+  <div id="import-modal" class="import-modal" hidden>
+    <div class="import-backdrop" data-close-import></div>
+    <section class="import-dialog" role="dialog" aria-modal="true" aria-labelledby="import-title">
+      <header class="import-dialog-head">
+        <div class="import-dialog-icon">W</div><div>
+          <span>IMPORT TEMPLATE</span><h2 id="import-title">Unggah dokumen Word</h2>
+        </div><button type="button" class="modal-close" data-close-import aria-label="Tutup"
+          >×</button
+        >
+      </header>
+      <div id="docx-dropzone" class="docx-dropzone" tabindex="0">
+        <input
+          id="docx-upload"
+          type="file"
+          accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          hidden
+        />
+        <div class="dropzone-art"><span>DOCX</span><i>↓</i></div>
+        <h3>Tarik dan lepaskan file di sini</h3><p>atau pilih dokumen dari komputer Anda</p>
+        <button id="browse-docx" class="secondary-button" type="button">Pilih file DOCX</button>
+        <small>Maksimal 30 MB · hanya format .docx</small>
+      </div>
+      <div id="import-file-state" class="import-file-state" hidden>
+        <div class="file-type-icon">W</div><div>
+          <strong id="import-file-name"></strong><span id="import-file-size"></span><div
+            class="import-progress"
+          >
+            <i id="import-progress-bar"></i>
+          </div>
+        </div><span id="import-state-label">Membaca dokumen…</span>
+      </div>
+      <div id="import-feedback" class="import-feedback" hidden></div>
+      <footer class="import-dialog-foot">
+        <p>Format teks dasar akan dipertahankan dan tetap dapat diedit.</p><button
+          class="secondary-button"
+          type="button"
+          data-close-import>Batal</button
+        >
+      </footer>
+    </section>
+  </div>
+</DashboardLayout>
+
+<script>
+  import mammothBrowserUrl from 'mammoth/mammoth.browser.min.js?url'
+  import { supabase } from '../../lib/supabase'
+
+  type MammothBrowser = {
+    convertToHtml(options: { arrayBuffer: ArrayBuffer }): Promise<{
+      value: string
+      messages: unknown[]
+    }>
+  }
+
+  let mammothPromise: Promise<MammothBrowser> | null = null
+
+  function loadMammoth() {
+    const browserWindow = window as Window & { mammoth?: MammothBrowser }
+    if (browserWindow.mammoth) return Promise.resolve(browserWindow.mammoth)
+    if (mammothPromise) return mammothPromise
+
+    mammothPromise = new Promise<MammothBrowser>((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = mammothBrowserUrl
+      script.async = true
+      script.onload = () => {
+        if (browserWindow.mammoth) resolve(browserWindow.mammoth)
+        else reject(new Error('Konverter DOCX tidak tersedia setelah dimuat.'))
+      }
+      script.onerror = () => reject(new Error('File konverter DOCX gagal dimuat.'))
+      document.head.appendChild(script)
+    }).catch((error) => {
+      mammothPromise = null
+      throw error
+    })
+
+    return mammothPromise
+  }
+
+  type Template = {
+    id: string
+    name: string
+    font_family: string
+    content_html: string | null
+    source_filename: string | null
+    subject: string | null
+    body: string | null
+    closing: string | null
+    variables: string[]
+  }
+  let templates: Template[] = []
+  let activeId: string | null = null
+  const list = document.querySelector('#template-list') as HTMLElement
+  const form = document.querySelector('#template-form') as HTMLFormElement
+  const empty = document.querySelector('#editor-empty') as HTMLElement
+  const content = document.querySelector('#template-content') as HTMLElement
+  const preview = document.querySelector('#template-preview') as HTMLElement
+  const nameInput = document.querySelector('#template-name') as HTMLInputElement
+  const font = document.querySelector('#template-font') as HTMLSelectElement
+  const message = document.querySelector('#template-message') as HTMLElement
+  const search = document.querySelector('#template-search') as HTMLInputElement
+  const fonts = [
+    ['Lora', 'Serif'],
+    ['Merriweather', 'Serif'],
+    ['Libre Baskerville', 'Serif'],
+    ['EB Garamond', 'Serif'],
+    ['Crimson Pro', 'Serif'],
+    ['Source Serif 4', 'Serif'],
+    ['Roboto Slab', 'Serif'],
+    ['Bitter', 'Serif'],
+    ['Alegreya', 'Serif'],
+    ['Georgia', 'Serif'],
+    ['Times New Roman', 'Serif'],
+    ['Inter', 'Sans Serif'],
+    ['Roboto', 'Sans Serif'],
+    ['Open Sans', 'Sans Serif'],
+    ['Source Sans 3', 'Sans Serif'],
+    ['DM Sans', 'Sans Serif'],
+    ['Manrope', 'Sans Serif'],
+    ['Montserrat', 'Sans Serif'],
+    ['Poppins', 'Sans Serif'],
+    ['Raleway', 'Sans Serif'],
+    ['Nunito Sans', 'Sans Serif'],
+    ['IBM Plex Sans', 'Sans Serif'],
+    ['Fira Sans', 'Sans Serif'],
+    ['Ubuntu', 'Sans Serif'],
+    ['Arial', 'Sans Serif'],
+    ['Playfair Display', 'Display'],
+    ['DM Serif Display', 'Display'],
+    ['Oswald', 'Display'],
+    ['Space Grotesk', 'Display'],
+    ['IBM Plex Mono', 'Monospace'],
+    ['Courier New', 'Monospace'],
+  ]
+  const fontButton = document.querySelector('#template-font-button') as HTMLButtonElement
+  const fontMenu = document.querySelector('#template-font-menu') as HTMLElement
+  const fontOptions = document.querySelector('#template-font-options') as HTMLElement
+  const fontSearch = document.querySelector('#template-font-search') as HTMLInputElement
+  font.innerHTML = fonts.map(([name]) => `<option value="${name}">${name}</option>`).join('')
+  function renderFonts(query = '') {
+    const q = query.toLowerCase()
+    let last = ''
+    fontOptions.innerHTML =
+      fonts
+        .filter(([name]) => name.toLowerCase().includes(q))
+        .map(([name, category]) => {
+          const heading =
+            category !== last ? `<div class="font-category">${(last = category)}</div>` : ''
+          return `${heading}<button type="button" class="font-option ${font.value === name ? 'active' : ''}" data-font="${name}" data-category="${category}" style="font-family:'${name}',sans-serif"><span>${name}</span><small>SuratKu · Aa Bb Cc 123</small></button>`
+        })
+        .join('') || '<p class="font-empty">Font tidak ditemukan.</p>'
+  }
+  function chooseFont(name: string, category?: string) {
+    font.value = name
+    const selected = fonts.find(([n]) => n === name)
+    const family = category || selected?.[1] || 'Serif'
+    const label = document.querySelector('#template-selected-font') as HTMLElement
+    label.textContent = name
+    label.style.fontFamily = `'${name}',sans-serif`
+    fontButton.querySelector('small')!.textContent = family
+    fontMenu.hidden = true
+    fontButton.setAttribute('aria-expanded', 'false')
+    renderFonts()
+    renderPreview()
+  }
+  fontButton.addEventListener('click', () => {
+    fontMenu.hidden = !fontMenu.hidden
+    fontButton.setAttribute('aria-expanded', String(!fontMenu.hidden))
+    if (!fontMenu.hidden) {
+      renderFonts()
+      setTimeout(() => fontSearch.focus(), 0)
+    }
+  })
+  fontSearch.addEventListener('input', () => renderFonts(fontSearch.value))
+  fontOptions.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('[data-font]') as HTMLElement | null
+    if (b) chooseFont(b.dataset.font!, b.dataset.category)
+  })
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('.font-control')) {
+      fontMenu.hidden = true
+      fontButton.setAttribute('aria-expanded', 'false')
+    }
+  })
+  const esc = (v: string) =>
+    (v || '').replace(
+      /[&<>'"]/g,
+      (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[c] || c,
+    )
+  function variables(html: string) {
+    return [...new Set([...html.matchAll(/\{\{\s*([\w_]+)\s*\}\}/g)].map((x) => x[1]))]
+  }
+  function renderPreview() {
+    preview.style.fontFamily = `'${font.value}',serif`
+    preview.innerHTML =
+      content.innerHTML || '<p class="preview-hint">Isi template akan tampil di sini.</p>'
+  }
+  function renderList() {
+    const q = search.value.toLowerCase()
+    const rows = templates.filter((t) => t.name.toLowerCase().includes(q))
+    list.innerHTML = rows.length
+      ? rows
+          .map(
+            (t) =>
+              `<button class="template-list-item ${t.id === activeId ? 'active' : ''}" data-id="${t.id}"><span>▤</span><div><strong>${esc(t.name)}</strong><small>${esc(t.source_filename || 'Template kustom')} · ${variables(t.content_html || '').length} field</small></div></button>`,
+          )
+          .join('')
+      : '<p class="muted-copy">Belum ada template.</p>'
+  }
+  function openEditor(t?: Template) {
+    activeId = t?.id || null
+    empty.hidden = true
+    form.hidden = false
+    nameInput.value = t?.name || ''
+    chooseFont(t?.font_family || 'Lora')
+    content.innerHTML =
+      t?.content_html ||
+      [t?.body, t?.closing]
+        .filter(Boolean)
+        .map((x) => `<p>${esc(x || '')}</p>`)
+        .join('') ||
+      '<h2>JUDUL SURAT</h2><p>Yth. {{nama_penerima}}</p><p>Isi surat Anda di sini.</p>'
+    const use = document.querySelector('#use-template') as HTMLAnchorElement
+    use.hidden = !t
+    use.href = t ? `/dashboard/buat/resmi?template=${t.id}` : '/dashboard/buat/resmi'
+    renderPreview()
+    renderList()
+  }
+  async function load() {
+    const { data, error } = await supabase
+      .from('letter_templates')
+      .select('*')
+      .order('updated_at', { ascending: false })
+    if (error) {
+      list.innerHTML = '<p class="message error">Jalankan migration template import terbaru.</p>'
+      return
+    }
+    templates = data || []
+    renderList()
+  }
+  list.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('[data-id]') as HTMLElement | null
+    if (b) openEditor(templates.find((t) => t.id === b.dataset.id))
+  })
+  search.addEventListener('input', renderList)
+  content.addEventListener('input', renderPreview)
+  document.querySelector('#new-template')?.addEventListener('click', () => openEditor())
+  document.querySelector('.placeholder-bar')?.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('[data-placeholder]') as HTMLElement | null
+    if (!b) return
+    content.focus()
+    document.execCommand('insertText', false, `{{${b.dataset.placeholder}}}`)
+    renderPreview()
+  })
+  const importModal = document.querySelector('#import-modal') as HTMLElement
+  const dropzone = document.querySelector('#docx-dropzone') as HTMLElement
+  const upload = document.querySelector('#docx-upload') as HTMLInputElement
+  const fileState = document.querySelector('#import-file-state') as HTMLElement
+  const feedback = document.querySelector('#import-feedback') as HTMLElement
+  const progress = document.querySelector('#import-progress-bar') as HTMLElement
+  function openImport() {
+    importModal.hidden = false
+    document.body.classList.add('modal-open')
+    feedback.hidden = true
+    fileState.hidden = true
+    dropzone.hidden = false
+  }
+  function closeImport() {
+    importModal.hidden = true
+    document.body.classList.remove('modal-open')
+    upload.value = ''
+    dropzone.classList.remove('dragging')
+  }
+  function showFeedback(text: string, type: 'error' | 'success') {
+    feedback.textContent = text
+    feedback.className = `import-feedback ${type}`
+    feedback.hidden = false
+  }
+  async function processDocx(file?: File) {
+    if (!file) return
+    feedback.hidden = true
+    if (!file.name.toLowerCase().endsWith('.docx')) {
+      showFeedback('Format tidak didukung. Pilih dokumen dengan ekstensi .docx.', 'error')
+      return
+    }
+    if (file.size > 30 * 1024 * 1024) {
+      showFeedback(
+        'Ukuran file melebihi 30 MB. Kompres gambar atau nonaktifkan penyematan font pada Word, lalu coba kembali.',
+        'error',
+      )
+      return
+    }
+    dropzone.hidden = true
+    fileState.hidden = false
+    ;(document.querySelector('#import-file-name') as HTMLElement).textContent = file.name
+    ;(document.querySelector('#import-file-size') as HTMLElement).textContent =
+      `${(file.size / 1024 / 1024).toFixed(2)} MB`
+    ;(document.querySelector('#import-state-label') as HTMLElement).textContent =
+      file.size > 15 * 1024 * 1024 ? 'Membaca dokumen besar…' : 'Membaca dokumen…'
+    progress.style.width = '35%'
+    try {
+      const mammoth = await loadMammoth()
+      const result = await mammoth.convertToHtml({ arrayBuffer: await file.arrayBuffer() })
+      progress.style.width = '100%'
+      ;(document.querySelector('#import-state-label') as HTMLElement).textContent = 'Berhasil'
+      openEditor()
+      nameInput.value = file.name.replace(/\.docx$/i, '')
+      content.innerHTML = result.value
+      content.dataset.source = file.name
+      renderPreview()
+      message.textContent = result.messages.length
+        ? 'Dokumen diimpor. Periksa kembali format yang disederhanakan.'
+        : 'Dokumen berhasil diimpor dan siap disesuaikan.'
+      message.className = 'message success'
+      showFeedback('Template berhasil diproses. Membuka editor…', 'success')
+      setTimeout(closeImport, 650)
+    } catch (error) {
+      console.error('Gagal mengimpor template DOCX:', error)
+      progress.style.width = '0'
+      ;(document.querySelector('#import-state-label') as HTMLElement).textContent = 'Gagal'
+      showFeedback(
+        error instanceof Error && error.message.includes('password')
+          ? 'Dokumen dilindungi password. Hapus proteksi dokumen lalu coba kembali.'
+          : 'Dokumen belum berhasil diproses. Coba muat ulang halaman, lalu unggah kembali file DOCX.',
+        'error',
+      )
+    }
+  }
+  document.querySelector('#open-import')?.addEventListener('click', openImport)
+  document
+    .querySelectorAll('[data-close-import]')
+    .forEach((el) => el.addEventListener('click', closeImport))
+  document.querySelector('#browse-docx')?.addEventListener('click', () => upload.click())
+  upload.addEventListener('change', () => processDocx(upload.files?.[0]))
+  dropzone.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('button')) upload.click()
+  })
+  dropzone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      upload.click()
+    }
+  })
+  ;['dragenter', 'dragover'].forEach((type) =>
+    dropzone.addEventListener(type, (e) => {
+      e.preventDefault()
+      dropzone.classList.add('dragging')
+    }),
+  )
+  ;['dragleave', 'drop'].forEach((type) =>
+    dropzone.addEventListener(type, (e) => {
+      e.preventDefault()
+      dropzone.classList.remove('dragging')
+    }),
+  )
+  dropzone.addEventListener('drop', (e) => processDocx(e.dataTransfer?.files?.[0]))
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !importModal.hidden) closeImport()
+  })
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+    const payload = {
+      user_id: user.id,
+      name: nameInput.value.trim(),
+      font_family: font.value,
+      content_html: content.innerHTML,
+      source_filename: content.dataset.source || null,
+      variables: variables(content.innerHTML),
+      body: content.innerText,
+      updated_at: new Date().toISOString(),
+    }
+    const query = activeId
+      ? supabase.from('letter_templates').update(payload).eq('id', activeId).select().single()
+      : supabase.from('letter_templates').insert(payload).select().single()
+    const { data, error } = await query
+    if (error) {
+      message.textContent = 'Gagal menyimpan template.'
+      message.className = 'message error'
+      return
+    }
+    message.textContent = 'Template berhasil disimpan.'
+    message.className = 'message success'
+    activeId = data.id
+    await load()
+    openEditor(data)
+  })
+  document.querySelector('#delete-template')?.addEventListener('click', async () => {
+    if (!activeId || !confirm('Hapus template ini?')) return
+    const { error } = await supabase.from('letter_templates').delete().eq('id', activeId)
+    if (!error) {
+      activeId = null
+      form.hidden = true
+      empty.hidden = false
+      await load()
+    }
+  })
+  load()
+</script>
