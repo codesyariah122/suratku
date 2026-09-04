@@ -17,6 +17,8 @@
     "@supabase/supabase-js": "^2.112.3",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.2.4",
+    "html2pdf.js": "^0.14.0",
+    "jszip": "^3.10.1",
     "mammoth": "^1.12.2",
     "tailwindcss": "^4.3.3"
   },

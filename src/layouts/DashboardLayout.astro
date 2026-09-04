@@ -18,6 +18,8 @@ const { title = 'Dashboard - SuratKu' } = Astro.props
 
     <meta name="description" content="SuratKu - Buat surat resmi dengan mudah." />
 
+    <link rel="icon" type="image/png" href="/images/logo-suratku.png" />
+
     <title>{title}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -43,7 +45,9 @@ const { title = 'Dashboard - SuratKu' } = Astro.props
       <aside class="dashboard-sidebar" id="dashboard-sidebar">
         <!-- BRAND -->
         <div class="sidebar-header">
-          <a href="/dashboard" class="sidebar-brand"> SuratKu </a>
+          <a href="/dashboard" class="sidebar-brand"
+            ><img src="/images/logo-suratku.png" alt="" /><span>SuratKu</span></a
+          >
         </div>
 
         <!-- NAVIGATION -->
@@ -216,7 +220,9 @@ const { title = 'Dashboard - SuratKu' } = Astro.props
             </svg>
           </button>
 
-          <a href="/dashboard" class="mobile-brand"> SuratKu </a>
+          <a href="/dashboard" class="mobile-brand"
+            ><img src="/images/logo-suratku.png" alt="" /><span>SuratKu</span></a
+          >
         </header>
 
         <!-- PAGE CONTENT -->
@@ -226,12 +232,102 @@ const { title = 'Dashboard - SuratKu' } = Astro.props
       </div>
     </div>
 
+    <div id="app-dialog" class="app-dialog" hidden>
+      <div class="app-dialog-backdrop" data-dialog-cancel></div>
+      <section
+        class="app-dialog-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="app-dialog-title"
+      >
+        <button class="app-dialog-close" type="button" data-dialog-cancel aria-label="Tutup"
+          >×</button
+        >
+        <div id="app-dialog-icon" class="app-dialog-icon">!</div>
+        <span id="app-dialog-eyebrow" class="app-dialog-eyebrow">KONFIRMASI</span>
+        <h2 id="app-dialog-title">Konfirmasi tindakan</h2>
+        <p id="app-dialog-message"></p>
+        <div class="app-dialog-actions">
+          <button id="app-dialog-cancel" class="secondary-button" type="button" data-dialog-cancel
+            >Batal</button
+          >
+          <button id="app-dialog-confirm" class="primary-button" type="button">Lanjutkan</button>
+        </div>
+      </section>
+    </div>
+
     <!-- ========================================
          SCRIPT
     ========================================= -->
 
     <script>
       import { supabase } from '../lib/supabase'
+
+      type DialogOptions = {
+        title?: string
+        message: string
+        confirmText?: string
+        cancelText?: string
+        tone?: 'danger' | 'info' | 'success'
+        eyebrow?: string
+        alert?: boolean
+      }
+      const dialog = document.querySelector('#app-dialog') as HTMLElement
+      const dialogCard = dialog.querySelector('.app-dialog-card') as HTMLElement
+      const dialogTitle = document.querySelector('#app-dialog-title') as HTMLElement
+      const dialogMessage = document.querySelector('#app-dialog-message') as HTMLElement
+      const dialogEyebrow = document.querySelector('#app-dialog-eyebrow') as HTMLElement
+      const dialogIcon = document.querySelector('#app-dialog-icon') as HTMLElement
+      const dialogConfirm = document.querySelector('#app-dialog-confirm') as HTMLButtonElement
+      const dialogCancel = document.querySelector('#app-dialog-cancel') as HTMLButtonElement
+      let resolveDialog: ((result: boolean) => void) | null = null
+
+      function closeDialog(result: boolean) {
+        if (dialog.hidden) return
+        dialog.hidden = true
+        document.body.classList.remove('modal-open')
+        resolveDialog?.(result)
+        resolveDialog = null
+      }
+
+      function showDialog(options: DialogOptions) {
+        if (resolveDialog) closeDialog(false)
+        dialogTitle.textContent = options.title || 'Konfirmasi tindakan'
+        dialogMessage.textContent = options.message
+        dialogEyebrow.textContent = options.eyebrow || (options.alert ? 'INFORMASI' : 'KONFIRMASI')
+        dialogConfirm.textContent =
+          options.confirmText || (options.alert ? 'Mengerti' : 'Lanjutkan')
+        dialogCancel.textContent = options.cancelText || 'Batal'
+        dialogCancel.hidden = Boolean(options.alert)
+        const tone = options.tone || 'info'
+        dialogCard.dataset.tone = tone
+        dialogIcon.textContent = tone === 'danger' ? '!' : tone === 'success' ? '✓' : 'i'
+        dialog.hidden = false
+        document.body.classList.add('modal-open')
+        setTimeout(() => dialogConfirm.focus(), 0)
+        return new Promise<boolean>((resolve) => {
+          resolveDialog = resolve
+        })
+      }
+
+      ;(
+        window as Window & {
+          suratkuDialog?: {
+            confirm: (options: DialogOptions) => Promise<boolean>
+            alert: (options: DialogOptions) => Promise<boolean>
+          }
+        }
+      ).suratkuDialog = {
+        confirm: showDialog,
+        alert: (options) => showDialog({ ...options, alert: true }),
+      }
+      dialogConfirm.addEventListener('click', () => closeDialog(true))
+      dialog
+        .querySelectorAll('[data-dialog-cancel]')
+        .forEach((element) => element.addEventListener('click', () => closeDialog(false)))
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !dialog.hidden) closeDialog(false)
+      })
 
       // ========================================
       // CHECK AUTH

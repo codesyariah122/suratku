@@ -68,15 +68,88 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
             ><button type="button" data-placeholder="nama_perusahaan">Perusahaan</button><button
               type="button"
               data-placeholder="nama_pengirim">Pengirim</button
+            ><span class="placeholder-divider"></span><span>Posisi footer:</span><div
+              class="footer-alignment-control"
             >
+              <button type="button" data-footer-align="left" class="active">Kiri</button><button
+                type="button"
+                data-footer-align="right">Kanan</button
+              >
+            </div>
           </div>
           <div class="template-workspace">
             <div>
-              <label class="editor-label">Konten template</label><div
-                id="template-content"
-                class="rich-template-editor"
-                contenteditable="true"
-              >
+              <label class="editor-label editor-label-with-status"
+                ><span>Konten & preview template</span><small>Edit langsung pada dokumen</small
+                ></label
+              ><div class="document-editor template-document-editor" data-template-editor-shell>
+                <div class="document-editor-toolbar" role="toolbar" aria-label="Format template">
+                  <div class="editor-tool-group editor-history-tools">
+                    <button type="button" data-template-command="undo" title="Urungkan">↶</button
+                    ><button type="button" data-template-command="redo" title="Ulangi">↷</button>
+                  </div>
+                  <select
+                    class="editor-style-select"
+                    data-template-value-command="formatBlock"
+                    aria-label="Gaya paragraf"
+                    ><option value="p">Paragraf</option><option value="h2">Judul</option><option
+                      value="h3">Subjudul</option
+                    ><option value="blockquote">Kutipan</option></select
+                  >
+                  <div class="editor-tool-group">
+                    <button type="button" data-template-command="bold" title="Tebal"
+                      ><strong>B</strong></button
+                    ><button type="button" data-template-command="italic" title="Miring"
+                      ><em>I</em></button
+                    ><button type="button" data-template-command="underline" title="Garis bawah"
+                      ><u>U</u></button
+                    ><button type="button" data-template-command="strikeThrough" title="Coret"
+                      ><s>S</s></button>
+                  </div>
+                  <div class="editor-tool-group">
+                    <button
+                      type="button"
+                      data-template-command="insertUnorderedList"
+                      title="Daftar poin">• Daftar</button
+                    ><button
+                      type="button"
+                      data-template-command="insertOrderedList"
+                      title="Daftar nomor">1. Daftar</button>
+                  </div>
+                  <div class="editor-tool-group editor-align-tools">
+                    <button type="button" data-template-command="justifyLeft" title="Rata kiri"
+                      >≡</button
+                    ><button type="button" data-template-command="justifyCenter" title="Rata tengah"
+                      >≡</button
+                    ><button type="button" data-template-command="justifyRight" title="Rata kanan"
+                      >≡</button
+                    ><button
+                      type="button"
+                      data-template-command="justifyFull"
+                      title="Rata kiri-kanan">☰</button>
+                  </div>
+                  <div class="editor-tool-group editor-color-tools">
+                    <label title="Warna teks"
+                      >A<input
+                        type="color"
+                        value="#172033"
+                        data-template-color-command="foreColor"
+                      /></label
+                    ><label class="editor-highlight" title="Warna sorotan"
+                      >▰<input
+                        type="color"
+                        value="#fff2a8"
+                        data-template-color-command="hiliteColor"
+                      /></label>
+                  </div>
+                  <button
+                    type="button"
+                    class="editor-clear-format"
+                    data-template-command="removeFormat">Hapus format</button
+                  >
+                </div>
+                <div id="template-content" class="rich-template-editor" contenteditable="true">
+                </div>
               </div><small
                 >Gunakan placeholder berbentuk <code>&#123;&#123;nama_penerima&#125;&#125;</code>.
                 Format dasar dari Word akan dipertahankan.</small
@@ -90,9 +163,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
             </div>
           </div>
           <div class="template-form-actions">
-            <button id="delete-template" class="danger-button" type="button">Hapus</button><span
-              id="template-message"
-              class="message"></span><a
+            <span id="template-message" class="message"></span><a
               id="use-template"
               class="secondary-button"
               href="/dashboard/buat/resmi">Gunakan</a
@@ -135,6 +206,16 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
         </div><span id="import-state-label">Membaca dokumen…</span>
       </div>
       <div id="import-feedback" class="import-feedback" hidden></div>
+      <div id="import-bundle" class="import-bundle" hidden>
+        <div class="import-bundle-head">
+          <div><strong>Template terdeteksi</strong><span id="import-bundle-summary"></span></div>
+          <button id="toggle-all-templates" type="button">Pilih semua</button>
+        </div>
+        <div id="import-bundle-list" class="import-bundle-list"></div>
+        <button id="save-imported-templates" class="primary-button import-save-all" type="button">
+          Simpan template terpilih
+        </button>
+      </div>
       <footer class="import-dialog-foot">
         <p>Format teks dasar akan dipertahankan dan tetap dapat diedit.</p><button
           class="secondary-button"
@@ -147,6 +228,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
 </DashboardLayout>
 
 <script>
+  import JSZip from 'jszip'
   import mammothBrowserUrl from 'mammoth/mammoth.browser.min.js?url'
   import { supabase } from '../../lib/supabase'
 
@@ -295,10 +377,92 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
   function variables(html: string) {
     return [...new Set([...html.matchAll(/\{\{\s*([\w_]+)\s*\}\}/g)].map((x) => x[1]))]
   }
+  function formatTemplateFields(html: string) {
+    const parsed = new DOMParser().parseFromString(html, 'text/html')
+    const seenTitles = new Set<string>()
+    let duplicateStart: Element | null = null
+    for (const paragraph of [...parsed.body.querySelectorAll('p')]) {
+      const title = (paragraph.textContent || '').replace(/\s+/g, ' ').trim()
+      const isDocumentTitle =
+        title.length >= 15 &&
+        title.length <= 100 &&
+        title.startsWith('SURAT ') &&
+        title === title.toUpperCase()
+      if (!isDocumentTitle) continue
+      if (seenTitles.has(title)) {
+        duplicateStart = paragraph
+        break
+      }
+      seenTitles.add(title)
+    }
+    if (duplicateStart) {
+      let node: Element | null = duplicateStart
+      while (node) {
+        const next: Element | null = node.nextElementSibling
+        node.remove()
+        node = next
+      }
+    }
+    if (!parsed.body.querySelector('.template-footer')) {
+      const remainingParagraphs = [...parsed.body.querySelectorAll('p')]
+      const footerStart = remainingParagraphs.findIndex((paragraph) =>
+        /^[\p{L} .'-]+,\s*\d{1,2}\s+\p{L}+\s+\d{4}$/u.test(
+          (paragraph.textContent || '').replace(/\s+/g, ' ').trim(),
+        ),
+      )
+      if (footerStart >= 0) {
+        const footer = parsed.createElement('div')
+        footer.className = 'template-footer'
+        footer.dataset.align = 'left'
+        const footerParagraphs = remainingParagraphs.slice(footerStart, footerStart + 4)
+        footerParagraphs[0].before(footer)
+        footerParagraphs.forEach((paragraph) => footer.appendChild(paragraph))
+      }
+    }
+    const fieldNames = new Set([
+      'nama',
+      'nik',
+      'nrp',
+      'alamat',
+      'jabatan',
+      'grade',
+      'nomor',
+      'no',
+      'no surat',
+      'nomor surat',
+      'tanggal',
+      'tempat',
+      'kepada',
+      'perihal',
+      'lampiran',
+      'lokasi kerja',
+      'lokasi kerja baru',
+    ])
+    const paragraphs = [...parsed.body.querySelectorAll('p')]
+    paragraphs.forEach((paragraph, index) => {
+      const match = (paragraph.textContent || '').trim().match(/^([^:]{1,32})\s*:\s*(.*)$/s)
+      if (!match || !fieldNames.has(match[1].trim().toLowerCase())) return
+      const label = match[1].trim()
+      let value = match[2].trim()
+      if (label.toLowerCase() === 'alamat') {
+        const continuation = paragraphs[index + 1]
+        const continuationText = (continuation?.textContent || '').trim()
+        if (continuation && continuationText && !continuationText.includes(':')) {
+          value = `${value} ${continuationText}`.trim()
+          continuation.remove()
+        }
+      }
+      paragraph.className = 'template-field-row'
+      paragraph.removeAttribute('style')
+      paragraph.innerHTML = `<span>${esc(label)}</span><b>:</b><span>${esc(value) || '&nbsp;'}</span>`
+    })
+    return parsed.body.innerHTML
+  }
   function renderPreview() {
     preview.style.fontFamily = `'${font.value}',serif`
     preview.innerHTML =
-      content.innerHTML || '<p class="preview-hint">Isi template akan tampil di sini.</p>'
+      formatTemplateFields(content.innerHTML) ||
+      '<p class="preview-hint">Isi template akan tampil di sini.</p>'
   }
   function renderList() {
     const q = search.value.toLowerCase()
@@ -307,7 +471,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
       ? rows
           .map(
             (t) =>
-              `<button class="template-list-item ${t.id === activeId ? 'active' : ''}" data-id="${t.id}"><span>▤</span><div><strong>${esc(t.name)}</strong><small>${esc(t.source_filename || 'Template kustom')} · ${variables(t.content_html || '').length} field</small></div></button>`,
+              `<div class="template-list-item ${t.id === activeId ? 'active' : ''}"><button class="template-list-open" type="button" data-id="${t.id}"><span>▤</span><span class="template-list-copy"><strong>${esc(t.name)}</strong><small>${esc(t.source_filename || 'Template kustom')} · ${variables(t.content_html || '').length} field</small></span></button><button class="template-list-delete" type="button" data-delete-id="${t.id}" aria-label="Hapus ${esc(t.name)}" title="Hapus template">⌫</button></div>`,
           )
           .join('')
       : '<p class="muted-copy">Belum ada template.</p>'
@@ -318,13 +482,24 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     form.hidden = false
     nameInput.value = t?.name || ''
     chooseFont(t?.font_family || 'Lora')
-    content.innerHTML =
+    const rawContent =
       t?.content_html ||
       [t?.body, t?.closing]
         .filter(Boolean)
         .map((x) => `<p>${esc(x || '')}</p>`)
         .join('') ||
       '<h2>JUDUL SURAT</h2><p>Yth. {{nama_penerima}}</p><p>Isi surat Anda di sini.</p>'
+    content.innerHTML = t ? formatTemplateFields(rawContent) : rawContent
+    const footerAlignment =
+      (content.querySelector('.template-footer') as HTMLElement | null)?.dataset.align || 'left'
+    document
+      .querySelectorAll('[data-footer-align]')
+      .forEach((button) =>
+        button.classList.toggle(
+          'active',
+          (button as HTMLElement).dataset.footerAlign === footerAlignment,
+        ),
+      )
     const use = document.querySelector('#use-template') as HTMLAnchorElement
     use.hidden = !t
     use.href = t ? `/dashboard/buat/resmi?template=${t.id}` : '/dashboard/buat/resmi'
@@ -343,14 +518,111 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     templates = data || []
     renderList()
   }
-  list.addEventListener('click', (e) => {
+  list.addEventListener('click', async (e) => {
+    const deleteButton = (e.target as HTMLElement).closest(
+      '[data-delete-id]',
+    ) as HTMLButtonElement | null
+    if (deleteButton) {
+      const template = templates.find((item) => item.id === deleteButton.dataset.deleteId)
+      if (!template) return
+      const approved = await (
+        window as Window & {
+          suratkuDialog: {
+            confirm: (options: Record<string, string>) => Promise<boolean>
+          }
+        }
+      ).suratkuDialog.confirm({
+        title: 'Hapus template?',
+        message: `Template “${template.name}” akan dihapus permanen dan tidak lagi muncul di katalog Buat Surat.`,
+        confirmText: 'Ya, hapus',
+        cancelText: 'Pertahankan',
+        tone: 'danger',
+        eyebrow: 'HAPUS TEMPLATE',
+      })
+      if (!approved) return
+      deleteButton.disabled = true
+      const { error } = await supabase.from('letter_templates').delete().eq('id', template.id)
+      if (error) {
+        deleteButton.disabled = false
+        await (
+          window as Window & {
+            suratkuDialog: { alert: (options: Record<string, string>) => Promise<boolean> }
+          }
+        ).suratkuDialog.alert({
+          title: 'Template belum terhapus',
+          message: error.message,
+          confirmText: 'Mengerti',
+          tone: 'danger',
+        })
+        return
+      }
+      if (activeId === template.id) {
+        activeId = null
+        form.hidden = true
+        empty.hidden = false
+      }
+      await load()
+      return
+    }
     const b = (e.target as HTMLElement).closest('[data-id]') as HTMLElement | null
     if (b) openEditor(templates.find((t) => t.id === b.dataset.id))
   })
   search.addEventListener('input', renderList)
   content.addEventListener('input', renderPreview)
+  const templateEditorShell = document.querySelector('[data-template-editor-shell]') as HTMLElement
+  templateEditorShell
+    .querySelectorAll<HTMLButtonElement>('[data-template-command]')
+    .forEach((button) => {
+      button.addEventListener('mousedown', (event) => event.preventDefault())
+      button.addEventListener('click', () => {
+        content.focus()
+        document.execCommand(button.dataset.templateCommand || '', false)
+        content.dispatchEvent(new Event('input', { bubbles: true }))
+      })
+    })
+  templateEditorShell
+    .querySelectorAll<HTMLSelectElement>('[data-template-value-command]')
+    .forEach((select) =>
+      select.addEventListener('change', () => {
+        content.focus()
+        document.execCommand(select.dataset.templateValueCommand || '', false, select.value)
+        content.dispatchEvent(new Event('input', { bubbles: true }))
+      }),
+    )
+  templateEditorShell
+    .querySelectorAll<HTMLInputElement>('[data-template-color-command]')
+    .forEach((picker) =>
+      picker.addEventListener('input', () => {
+        content.focus()
+        document.execCommand(picker.dataset.templateColorCommand || '', false, picker.value)
+        content.dispatchEvent(new Event('input', { bubbles: true }))
+      }),
+    )
   document.querySelector('#new-template')?.addEventListener('click', () => openEditor())
   document.querySelector('.placeholder-bar')?.addEventListener('click', (e) => {
+    const alignmentButton = (e.target as HTMLElement).closest(
+      '[data-footer-align]',
+    ) as HTMLButtonElement | null
+    if (alignmentButton) {
+      let footer = content.querySelector('.template-footer') as HTMLElement | null
+      if (!footer) {
+        content.innerHTML = formatTemplateFields(content.innerHTML)
+        footer = content.querySelector('.template-footer') as HTMLElement | null
+      }
+      if (!footer) {
+        message.textContent = 'Blok footer belum terdeteksi pada template ini.'
+        message.className = 'message error'
+        return
+      }
+      footer.dataset.align = alignmentButton.dataset.footerAlign || 'left'
+      document
+        .querySelectorAll('[data-footer-align]')
+        .forEach((button) => button.classList.toggle('active', button === alignmentButton))
+      renderPreview()
+      message.textContent = 'Posisi footer diperbarui. Klik Simpan template untuk menyimpan.'
+      message.className = 'message success'
+      return
+    }
     const b = (e.target as HTMLElement).closest('[data-placeholder]') as HTMLElement | null
     if (!b) return
     content.focus()
@@ -363,11 +635,20 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
   const fileState = document.querySelector('#import-file-state') as HTMLElement
   const feedback = document.querySelector('#import-feedback') as HTMLElement
   const progress = document.querySelector('#import-progress-bar') as HTMLElement
+  const importBundle = document.querySelector('#import-bundle') as HTMLElement
+  const importBundleList = document.querySelector('#import-bundle-list') as HTMLElement
+  const importBundleSummary = document.querySelector('#import-bundle-summary') as HTMLElement
+  const saveImportedTemplates = document.querySelector(
+    '#save-imported-templates',
+  ) as HTMLButtonElement
+  type ImportedTemplate = { name: string; html: string; source: string }
+  let importedTemplates: ImportedTemplate[] = []
   function openImport() {
     importModal.hidden = false
     document.body.classList.add('modal-open')
     feedback.hidden = true
     fileState.hidden = true
+    importBundle.hidden = true
     dropzone.hidden = false
   }
   function closeImport() {
@@ -375,11 +656,110 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     document.body.classList.remove('modal-open')
     upload.value = ''
     dropzone.classList.remove('dragging')
+    importedTemplates = []
   }
   function showFeedback(text: string, type: 'error' | 'success') {
     feedback.textContent = text
     feedback.className = `import-feedback ${type}`
     feedback.hidden = false
+  }
+
+  const wordNamespace = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+  const wordAttr = (element: Element, name: string) =>
+    element.getAttributeNS(wordNamespace, name) || element.getAttribute(`w:${name}`) || ''
+  const wordElements = (element: Element, name: string) => [
+    ...element.getElementsByTagNameNS(wordNamespace, name),
+  ]
+  const directWordChild = (element: Element, name: string) =>
+    [...element.children].find(
+      (child) => child.localName === name && child.namespaceURI === wordNamespace,
+    )
+
+  function paragraphHtml(paragraph: Element) {
+    const properties = directWordChild(paragraph, 'pPr')
+    const alignment = properties
+      ? wordAttr(wordElements(properties, 'jc')[0] || document.createElement('i'), 'val')
+      : ''
+    const style = ['center', 'right', 'justify'].includes(alignment)
+      ? ` style="text-align:${alignment}"`
+      : ''
+    const pieces = [...paragraph.children]
+      .filter((node) => node.localName === 'r' || node.localName === 'hyperlink')
+      .flatMap((node) => (node.localName === 'hyperlink' ? wordElements(node, 'r') : [node]))
+      .map((run) => {
+        const text = wordElements(run, 't')
+          .map((node) => node.textContent || '')
+          .join('')
+        const breaks = wordElements(run, 'br').length
+        const tabs = wordElements(run, 'tab').length
+        let value = esc(text) + '&emsp;'.repeat(tabs) + '<br>'.repeat(breaks)
+        const runProperties = directWordChild(run, 'rPr')
+        if (runProperties && directWordChild(runProperties, 'b'))
+          value = `<strong>${value}</strong>`
+        if (runProperties && directWordChild(runProperties, 'i')) value = `<em>${value}</em>`
+        if (runProperties && directWordChild(runProperties, 'u')) value = `<u>${value}</u>`
+        return value
+      })
+      .join('')
+    return pieces.trim() ? `<p${style}>${pieces}</p>` : ''
+  }
+
+  async function splitDocxTemplates(arrayBuffer: ArrayBuffer, source: string) {
+    const zip = await JSZip.loadAsync(arrayBuffer)
+    const xmlText = await zip.file('word/document.xml')?.async('text')
+    if (!xmlText) return []
+    const xml = new DOMParser().parseFromString(xmlText, 'application/xml')
+    if (xml.querySelector('parsererror')) return []
+    const body = wordElements(xml.documentElement, 'body')[0]
+    if (!body) return []
+
+    const sections: { text: string; html: string }[] = []
+    let paragraphs: Element[] = []
+    const flush = () => {
+      const text = paragraphs
+        .map((paragraph) =>
+          wordElements(paragraph, 't')
+            .map((node) => node.textContent || '')
+            .join('')
+            .trim(),
+        )
+        .filter(Boolean)
+        .join('\n')
+      const html = paragraphs.map(paragraphHtml).filter(Boolean).join('')
+      if (text || html) sections.push({ text, html })
+      paragraphs = []
+    }
+    for (const child of [...body.children]) {
+      if (child.localName === 'p') {
+        paragraphs.push(child)
+        if (wordElements(child, 'sectPr').length) flush()
+      }
+    }
+    flush()
+
+    const results: ImportedTemplate[] = []
+    for (let index = 0; index < sections.length; index += 1) {
+      const label = sections[index].text.replace(/\s+/g, ' ').trim()
+      const next = sections[index + 1]
+      const isLabel = label.length >= 3 && label.length <= 80 && label === label.toUpperCase()
+      if (isLabel && next && next.text.length > 120) {
+        results.push({ name: label, html: next.html, source })
+        index += 1
+      }
+    }
+    return results
+  }
+
+  function renderImportBundle() {
+    importBundleSummary.textContent = `${importedTemplates.length} jenis surat ditemukan dari dokumen ini.`
+    importBundleList.innerHTML = importedTemplates
+      .map(
+        (template, index) =>
+          `<label class="import-template-row"><input type="checkbox" value="${index}" checked><span class="import-template-number">${String(index + 1).padStart(2, '0')}</span><span><strong>${esc(template.name)}</strong><small>${Math.max(1, Math.round(template.html.replace(/<[^>]+>/g, '').length / 100))} bagian konten · siap diedit</small></span><i>✓</i></label>`,
+      )
+      .join('')
+    importBundle.hidden = false
+    fileState.hidden = true
   }
   async function processDocx(file?: File) {
     if (!file) return
@@ -404,8 +784,19 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
       file.size > 15 * 1024 * 1024 ? 'Membaca dokumen besar…' : 'Membaca dokumen…'
     progress.style.width = '35%'
     try {
+      const arrayBuffer = await file.arrayBuffer()
+      importedTemplates = await splitDocxTemplates(arrayBuffer, file.name)
+      if (importedTemplates.length > 1) {
+        progress.style.width = '100%'
+        renderImportBundle()
+        showFeedback(
+          `${importedTemplates.length} template berhasil dipisahkan berdasarkan section Word. Pilih template yang ingin disimpan.`,
+          'success',
+        )
+        return
+      }
       const mammoth = await loadMammoth()
-      const result = await mammoth.convertToHtml({ arrayBuffer: await file.arrayBuffer() })
+      const result = await mammoth.convertToHtml({ arrayBuffer })
       progress.style.width = '100%'
       ;(document.querySelector('#import-state-label') as HTMLElement).textContent = 'Berhasil'
       openEditor()
@@ -459,6 +850,48 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     }),
   )
   dropzone.addEventListener('drop', (e) => processDocx(e.dataTransfer?.files?.[0]))
+  document.querySelector('#toggle-all-templates')?.addEventListener('click', () => {
+    const boxes = [...importBundleList.querySelectorAll('input')] as HTMLInputElement[]
+    const shouldCheck = boxes.some((box) => !box.checked)
+    boxes.forEach((box) => (box.checked = shouldCheck))
+  })
+  saveImportedTemplates.addEventListener('click', async () => {
+    const selected = [...importBundleList.querySelectorAll<HTMLInputElement>('input:checked')].map(
+      (box) => importedTemplates[Number(box.value)],
+    )
+    if (!selected.length) {
+      showFeedback('Pilih minimal satu template untuk disimpan.', 'error')
+      return
+    }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+    saveImportedTemplates.disabled = true
+    saveImportedTemplates.textContent = `Menyimpan ${selected.length} template…`
+    const payload = selected.map((template) => ({
+      user_id: user.id,
+      name: template.name,
+      category: 'imported',
+      font_family: 'Lora',
+      content_html: template.html,
+      source_filename: template.source,
+      variables: variables(template.html),
+      body: new DOMParser().parseFromString(template.html, 'text/html').body.innerText,
+      updated_at: new Date().toISOString(),
+    }))
+    const { error } = await supabase.from('letter_templates').insert(payload)
+    saveImportedTemplates.disabled = false
+    saveImportedTemplates.textContent = 'Simpan template terpilih'
+    if (error) {
+      showFeedback(`Gagal menyimpan template: ${error.message}`, 'error')
+      return
+    }
+    await load()
+    closeImport()
+    message.textContent = `${selected.length} template berhasil ditambahkan ke katalog Buat Surat.`
+    message.className = 'message success'
+  })
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !importModal.hidden) closeImport()
   })
@@ -492,16 +925,6 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     activeId = data.id
     await load()
     openEditor(data)
-  })
-  document.querySelector('#delete-template')?.addEventListener('click', async () => {
-    if (!activeId || !confirm('Hapus template ini?')) return
-    const { error } = await supabase.from('letter_templates').delete().eq('id', activeId)
-    if (!error) {
-      activeId = null
-      form.hidden = true
-      empty.hidden = false
-      await load()
-    }
   })
   load()
 </script>

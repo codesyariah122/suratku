@@ -4,56 +4,110 @@ import Layout from '../layouts/Layout.astro'
 
 <Layout title="Register">
   <main class="auth-page">
-    <div class="auth-card">
-      <h1>Buat Akun</h1>
+    <a class="auth-home" href="/" aria-label="Kembali ke beranda">
+      <img src="/images/logo-suratku.png" alt="" />
+      <span>SuratKu</span>
+    </a>
 
-      <p class="auth-description">Silakan buat akun untuk melanjutkan.</p>
-
-      <form id="register-form">
-        <div class="form-group">
-          <label for="full_name">Nama Lengkap</label>
-          <input type="text" id="full_name" name="full_name" placeholder="Nama lengkap" required />
+    <section class="auth-shell">
+      <aside class="auth-showcase register-showcase">
+        <div class="auth-showcase-copy">
+          <span class="auth-eyebrow"><i></i> MULAI TANPA BIAYA</span>
+          <h2>Satu akun untuk<br /><em>semua surat resmi.</em></h2>
+          <p>Bangun standar dokumen perusahaan yang konsisten—dari template hingga arsip PDF.</p>
+          <div class="auth-metrics">
+            <div><strong>24+</strong><span>Jenis surat</span></div>
+            <div><strong>A4</strong><span>Siap cetak</span></div>
+            <div><strong>1×</strong><span>Isi identitas</span></div>
+          </div>
         </div>
-
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="email@example.com" required />
+        <div class="auth-quote">
+          <span>“</span>
+          <p>Administrasi yang terlihat profesional dimulai dari dokumen yang konsisten.</p>
         </div>
+      </aside>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Minimal 6 karakter"
-            minlength="6"
-            required
-          />
-        </div>
+      <div class="auth-card auth-card-register">
+        <span class="auth-kicker">BUAT RUANG KERJA ANDA</span>
+        <h1>Mulai dengan SuratKu</h1>
+        <p class="auth-description">Gratis untuk memulai. Siapkan akun Anda dalam satu menit.</p>
 
-        <div class="form-group">
-          <label for="password_confirmation">Konfirmasi Password</label>
-          <input
-            type="password"
-            id="password_confirmation"
-            name="password_confirmation"
-            placeholder="Ulangi password"
-            minlength="6"
-            required
-          />
-        </div>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="full_name">Nama Lengkap</label>
+            <div class="input-wrap">
+              <span class="input-icon">Aa</span><input
+                type="text"
+                id="full_name"
+                name="full_name"
+                placeholder="Nama lengkap Anda"
+                autocomplete="name"
+                required
+              />
+            </div>
+          </div>
 
-        <button type="submit" id="register-button"> Daftar </button>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-wrap">
+              <span class="input-icon">@</span><input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="nama@perusahaan.com"
+                autocomplete="email"
+                required
+              />
+            </div>
+          </div>
 
-        <p id="register-message" class="message"></p>
-      </form>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">●</span><input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Minimal 6 karakter"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              /><button
+                class="password-toggle"
+                type="button"
+                aria-label="Tampilkan password"
+                data-password-toggle="password">Lihat</button>
+            </div>
+          </div>
 
-      <p class="auth-footer">
-        Sudah punya akun?
-        <a href="/login">Login</a>
-      </p>
-    </div>
+          <div class="form-group">
+            <label for="password_confirmation">Konfirmasi Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">✓</span><input
+                type="password"
+                id="password_confirmation"
+                name="password_confirmation"
+                placeholder="Ulangi password"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              /><button
+                class="password-toggle"
+                type="button"
+                aria-label="Tampilkan konfirmasi password"
+                data-password-toggle="password_confirmation">Lihat</button>
+            </div>
+          </div>
+
+          <button type="submit" id="register-button">Buat akun gratis <span>→</span></button>
+
+          <p id="register-message" class="message"></p>
+        </form>
+
+        <p class="auth-footer">Sudah punya akun? <a href="/login">Masuk di sini</a></p>
+        <p class="auth-assurance">Dengan mendaftar, Anda menyetujui penggunaan layanan SuratKu.</p>
+      </div>
+    </section>
   </main>
 </Layout>
 
@@ -63,6 +117,15 @@ import Layout from '../layouts/Layout.astro'
   const form = document.querySelector('#register-form') as HTMLFormElement
   const button = document.querySelector('#register-button') as HTMLButtonElement
   const message = document.querySelector('#register-message') as HTMLParagraphElement
+
+  document.querySelectorAll<HTMLButtonElement>('[data-password-toggle]').forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      const input = document.querySelector(`#${toggle.dataset.passwordToggle}`) as HTMLInputElement
+      const visible = input.type === 'text'
+      input.type = visible ? 'password' : 'text'
+      toggle.textContent = visible ? 'Lihat' : 'Tutup'
+    })
+  })
 
   form?.addEventListener('submit', async (event) => {
     event.preventDefault()
@@ -104,7 +167,7 @@ import Layout from '../layouts/Layout.astro'
       message.classList.add('error')
 
       button.disabled = false
-      button.textContent = 'Daftar'
+      button.innerHTML = 'Buat akun gratis <span>→</span>'
 
       return
     }
@@ -127,6 +190,6 @@ import Layout from '../layouts/Layout.astro'
     form.reset()
 
     button.disabled = false
-    button.textContent = 'Daftar'
+    button.innerHTML = 'Buat akun gratis <span>→</span>'
   })
 </script>

@@ -36,6 +36,31 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     </div>
     <div id="letters-list" class="letters-list" hidden></div>
   </section>
+  <div id="pdf-preview-modal" class="pdf-preview-modal" hidden>
+    <div class="pdf-preview-backdrop" data-close-pdf></div>
+    <section
+      class="pdf-preview-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="pdf-preview-title"
+    >
+      <header class="pdf-preview-head">
+        <div><span>PREVIEW DOKUMEN</span><h2 id="pdf-preview-title">Preview PDF</h2></div>
+        <div class="pdf-preview-actions">
+          <button id="download-pdf" class="primary-button" type="button">↓ Download PDF</button
+          ><button class="modal-close" type="button" data-close-pdf aria-label="Tutup">×</button>
+        </div>
+      </header>
+      <div class="pdf-preview-stage">
+        <div id="pdf-loading" class="pdf-loading">Menyiapkan dokumen…</div><article
+          id="pdf-document"
+          class="pdf-document"
+          hidden
+        >
+        </article>
+      </div>
+    </section>
+  </div>
 </DashboardLayout>
 
 <script>
@@ -49,6 +74,15 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     recipient_company: string | null
     status: string
     created_at: string
+    attachment?: string | null
+    recipient_title?: string | null
+    recipient_address?: string | null
+    body?: string | null
+    closing?: string | null
+    sender_name?: string | null
+    sender_title?: string | null
+    font_family?: string | null
+    logo_url?: string | null
   }
   let letters: Letter[] = []
   const list = document.querySelector('#letters-list') as HTMLDivElement
@@ -56,6 +90,11 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
   const empty = document.querySelector('#letters-empty') as HTMLDivElement
   const search = document.querySelector('#search') as HTMLInputElement
   const statusFilter = document.querySelector('#status-filter') as HTMLSelectElement
+  const pdfModal = document.querySelector('#pdf-preview-modal') as HTMLElement
+  const pdfDocument = document.querySelector('#pdf-document') as HTMLElement
+  const pdfLoading = document.querySelector('#pdf-loading') as HTMLElement
+  const downloadPdf = document.querySelector('#download-pdf') as HTMLButtonElement
+  let activePdfLetter: Letter | null = null
   const esc = (value: string | null) =>
     (value || '').replace(
       /[&<>'"]/g,
@@ -75,7 +114,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     list.innerHTML = rows
       .map(
         (x) =>
-          `<article class="letter-row"><div class="letter-file-icon">▤</div><div class="letter-main"><strong>${esc(x.subject)}</strong><span>${esc(x.letter_number) || 'Tanpa nomor'} · ${new Date(x.letter_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div><div class="letter-recipient"><small>DITUJUKAN KEPADA</small><span>${esc(x.recipient_name)}${x.recipient_company ? ` · ${esc(x.recipient_company)}` : ''}</span></div><span class="status-pill ${x.status}">${x.status === 'final' ? 'Final' : 'Draf'}</span><a class="icon-button edit-letter" href="/dashboard/buat/resmi?id=${x.id}" aria-label="Edit surat">✎</a><button class="icon-button delete-letter" data-id="${x.id}" aria-label="Hapus surat">×</button></article>`,
+          `<article class="letter-row"><div class="letter-file-icon">▤</div><div class="letter-main"><strong>${esc(x.subject)}</strong><span>${esc(x.letter_number) || 'Tanpa nomor'} · ${new Date(x.letter_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div><div class="letter-recipient"><small>DITUJUKAN KEPADA</small><span>${esc(x.recipient_name)}${x.recipient_company ? ` · ${esc(x.recipient_company)}` : ''}</span></div><div class="letter-actions"><span class="status-pill ${x.status}">${x.status === 'final' ? 'Final' : 'Draf'}</span><button class="history-action preview-letter" data-preview-id="${x.id}" type="button" aria-label="Preview PDF"><span>▣</span><b>Preview</b></button><button class="history-action download-letter" data-download-id="${x.id}" type="button" aria-label="Download PDF"><span>↓</span><b>PDF</b></button><a class="icon-button edit-letter" href="/dashboard/buat/resmi?id=${x.id}" aria-label="Edit surat" title="Edit surat">✎</a><button class="icon-button delete-letter" data-id="${x.id}" aria-label="Hapus surat" title="Hapus surat">×</button></div></article>`,
       )
       .join('')
     list.hidden = rows.length === 0
@@ -102,15 +141,136 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
   }
   search?.addEventListener('input', render)
   statusFilter?.addEventListener('change', render)
+  const safeRichText = (value = '') => {
+    if (!/<[^>]+>/.test(value)) return `<p>${esc(value).replace(/\n/g, '<br>')}</p>`
+    const parsed = new DOMParser().parseFromString(value, 'text/html')
+    parsed.body
+      .querySelectorAll('script,iframe,object,embed,form,input,button')
+      .forEach((node) => node.remove())
+    parsed.body.querySelectorAll<HTMLElement>('*').forEach((node) => {
+      ;[...node.attributes].forEach((attribute) => {
+        if (!['style', 'class', 'data-align', 'href'].includes(attribute.name))
+          node.removeAttribute(attribute.name)
+      })
+    })
+    return parsed.body.innerHTML
+  }
+  const formatDate = (value: string) =>
+    new Date(`${value}T12:00:00`).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  function renderPdfLetter(letter: Letter) {
+    const hasTemplateFooter = /template-footer/.test(letter.body || '')
+    pdfDocument.style.fontFamily = `'${letter.font_family || 'Lora'}', serif`
+    pdfDocument.innerHTML = `<header class="pdf-letterhead"><div class="pdf-logo"><img src="${letter.logo_url ? esc(letter.logo_url) : '/images/logo-suratku.png'}" alt="Logo"></div><div><strong>SuratKu</strong><small>Dokumen surat resmi perusahaan</small></div></header><div class="pdf-rule"></div><div class="pdf-date">Jakarta, ${formatDate(letter.letter_date)}</div><dl class="pdf-meta"><div><dt>Nomor</dt><dd>: ${esc(letter.letter_number) || '—'}</dd></div><div><dt>Lampiran</dt><dd>: ${esc(letter.attachment || '') || '—'}</dd></div><div><dt>Perihal</dt><dd>: ${esc(letter.subject)}</dd></div></dl><div class="pdf-recipient">Yth. <strong>${esc(letter.recipient_name)}</strong><br>${esc([letter.recipient_title, letter.recipient_company].filter(Boolean).join(', '))}<br>${esc(letter.recipient_address || 'di Tempat')}</div><div class="pdf-body">${safeRichText(letter.body || '')}</div>${hasTemplateFooter ? '' : `<div class="pdf-closing">${safeRichText(letter.closing || '')}</div><div class="pdf-signature"><span>Hormat kami,</span><strong>${esc(letter.sender_name || '')}</strong><small>${esc(letter.sender_title || '')}</small></div>`}`
+  }
+  async function getFullLetter(id: string) {
+    const cached = letters.find((letter) => letter.id === id)
+    if (cached?.body !== undefined) return cached
+    const { data, error } = await supabase.from('letters').select('*').eq('id', id).single()
+    if (error) throw error
+    const index = letters.findIndex((letter) => letter.id === id)
+    if (index >= 0) letters[index] = data
+    return data as Letter
+  }
+  async function openPdfPreview(id: string) {
+    activePdfLetter = null
+    pdfModal.hidden = false
+    document.body.classList.add('modal-open')
+    pdfLoading.hidden = false
+    pdfDocument.hidden = true
+    downloadPdf.disabled = true
+    try {
+      activePdfLetter = await getFullLetter(id)
+      renderPdfLetter(activePdfLetter)
+      pdfLoading.hidden = true
+      pdfDocument.hidden = false
+      downloadPdf.disabled = false
+    } catch {
+      pdfLoading.textContent = 'Dokumen gagal dimuat. Silakan coba kembali.'
+    }
+  }
+  function closePdfPreview() {
+    pdfModal.hidden = true
+    document.body.classList.remove('modal-open')
+  }
+  document
+    .querySelectorAll('[data-close-pdf]')
+    .forEach((button) => button.addEventListener('click', closePdfPreview))
+  downloadPdf.addEventListener('click', async () => {
+    if (!activePdfLetter) return
+    downloadPdf.disabled = true
+    downloadPdf.textContent = 'Membuat PDF…'
+    // @ts-expect-error html2pdf.js does not publish complete TypeScript declarations.
+    const { default: html2pdf } = await import('html2pdf.js')
+    const filename = `${activePdfLetter.letter_number || activePdfLetter.subject || 'surat'}`
+      .replace(/[^a-z0-9-_]+/gi, '-')
+      .replace(/^-|-$/g, '')
+    await html2pdf()
+      .set({
+        margin: 0,
+        filename: `${filename}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] },
+      })
+      .from(pdfDocument)
+      .save()
+    downloadPdf.disabled = false
+    downloadPdf.textContent = '↓ Download PDF'
+  })
   list?.addEventListener('click', async (e) => {
+    const previewButton = (e.target as HTMLElement).closest(
+      '[data-preview-id]',
+    ) as HTMLButtonElement | null
+    if (previewButton) return openPdfPreview(previewButton.dataset.previewId!)
+    const directDownload = (e.target as HTMLElement).closest(
+      '[data-download-id]',
+    ) as HTMLButtonElement | null
+    if (directDownload) {
+      await openPdfPreview(directDownload.dataset.downloadId!)
+      if (activePdfLetter) downloadPdf.click()
+      return
+    }
     const button = (e.target as HTMLElement).closest('.delete-letter') as HTMLButtonElement | null
-    if (!button || !confirm('Hapus surat ini?')) return
+    if (!button) return
+    const letter = letters.find((item) => item.id === button.dataset.id)
+    const approved = await (
+      window as Window & {
+        suratkuDialog: {
+          confirm: (options: Record<string, string>) => Promise<boolean>
+        }
+      }
+    ).suratkuDialog.confirm({
+      title: 'Hapus surat?',
+      message: `Surat “${letter?.subject || letter?.letter_number || 'Tanpa judul'}” akan dihapus permanen dari riwayat.`,
+      confirmText: 'Ya, hapus',
+      cancelText: 'Pertahankan',
+      tone: 'danger',
+      eyebrow: 'HAPUS DOKUMEN',
+    })
+    if (!approved) return
     button.disabled = true
     const { error } = await supabase.from('letters').delete().eq('id', button.dataset.id!)
     if (!error) {
       letters = letters.filter((x) => x.id !== button.dataset.id)
       render()
-    } else button.disabled = false
+    } else {
+      button.disabled = false
+      await (
+        window as Window & {
+          suratkuDialog: { alert: (options: Record<string, string>) => Promise<boolean> }
+        }
+      ).suratkuDialog.alert({
+        title: 'Surat belum terhapus',
+        message: error.message,
+        confirmText: 'Mengerti',
+        tone: 'danger',
+      })
+    }
   })
   loadLetters()
 </script>

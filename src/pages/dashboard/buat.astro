@@ -69,9 +69,20 @@ const groups = [
           type="search"
           placeholder="Cari jenis surat…"
         /></label
-      ><span>24 format profesional</span>
+      ><span id="catalog-total">24 format profesional</span>
     </div>
     <div id="catalog-groups">
+      <section id="personal-template-group" class="catalog-group personal-catalog-group" hidden>
+        <div class="catalog-group-head">
+          <div>
+            <span class="catalog-personal-label">KOLEKSI ANDA</span>
+            <h2>Template saya</h2>
+            <p>Template kustom dan hasil impor dokumen Word.</p>
+          </div>
+          <span id="personal-template-count"></span>
+        </div>
+        <div id="personal-template-grid" class="catalog-grid"></div>
+      </section>
       {
         groups.map((group) => (
           <section class="catalog-group">
@@ -112,8 +123,17 @@ const groups = [
 </DashboardLayout>
 
 <script>
+  import { supabase } from '../../lib/supabase'
+
   const search = document.querySelector('#catalog-search') as HTMLInputElement
-  search?.addEventListener('input', () => {
+  const esc = (value: string) =>
+    value.replace(
+      /[&<>'"]/g,
+      (character) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character] ||
+        character,
+    )
+  function filterCatalog() {
     const q = search.value.toLowerCase().trim()
     document.querySelectorAll('.catalog-card').forEach((card) => {
       ;(card as HTMLElement).hidden = !((card as HTMLElement).dataset.search || '').includes(q)
@@ -122,5 +142,32 @@ const groups = [
       ;(group as HTMLElement).hidden =
         group.querySelectorAll('.catalog-card:not([hidden])').length === 0
     })
-  })
+  }
+  search?.addEventListener('input', filterCatalog)
+
+  async function loadPersonalTemplates() {
+    const { data } = await supabase
+      .from('letter_templates')
+      .select('id,name,source_filename,category,variables,updated_at')
+      .order('updated_at', { ascending: false })
+    if (!data?.length) return
+    const group = document.querySelector('#personal-template-group') as HTMLElement
+    const grid = document.querySelector('#personal-template-grid') as HTMLElement
+    grid.innerHTML = data
+      .map((template, index) => {
+        const imported = template.category === 'imported' || template.source_filename
+        const description = imported
+          ? `Diimpor dari ${template.source_filename || 'dokumen Word'}`
+          : `${Array.isArray(template.variables) ? template.variables.length : 0} field dinamis`
+        return `<a class="catalog-card personal-template-card" href="/dashboard/buat/resmi?template=${encodeURIComponent(template.id)}" data-search="${esc(`${template.name} ${description}`.toLowerCase())}"><span class="catalog-icon">${imported ? 'W' : '✦'}</span><div><span class="template-origin">${imported ? 'DOCX' : 'KUSTOM'}</span><h3>${esc(template.name)}</h3><p>${esc(description)}</p></div><span class="catalog-arrow">→</span></a>`
+      })
+      .join('')
+    group.hidden = false
+    ;(document.querySelector('#personal-template-count') as HTMLElement).textContent =
+      `${data.length} template`
+    ;(document.querySelector('#catalog-total') as HTMLElement).textContent =
+      `${24 + data.length} format tersedia`
+    filterCatalog()
+  }
+  loadPersonalTemplates()
 </script>

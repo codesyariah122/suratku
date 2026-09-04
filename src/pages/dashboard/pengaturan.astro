@@ -15,14 +15,38 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
       <div class="form-card-header">
         <h2>Profil Anda</h2><p>Gunakan identitas personal atau perusahaan.</p>
       </div>
-      <div class="logo-setting">
-        <div id="logo-preview" class="logo-preview">LOGO</div><div>
-          <label class="upload-button" for="company_logo">Unggah logo perusahaan</label><input
-            id="company_logo"
-            type="file"
-            accept="image/png,image/jpeg,image/webp,image/svg+xml"
-            hidden
-          /><p>PNG, JPG, WebP, atau SVG · maksimal 2 MB</p>
+      <div
+        id="logo-dropzone"
+        class="logo-dropzone"
+        tabindex="0"
+        role="button"
+        aria-label="Unggah logo perusahaan"
+      >
+        <input
+          id="company_logo"
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/svg+xml"
+          hidden
+        />
+        <div id="logo-preview" class="logo-preview"><span>+</span><b>LOGO</b></div>
+        <div class="logo-dropzone-copy">
+          <span class="logo-upload-label">LOGO PERUSAHAAN</span><h3>
+            Tarik dan lepaskan logo di sini
+          </h3><p>atau klik untuk memilih dari komputer</p><div class="logo-upload-meta">
+            <span>PNG</span><span>JPG</span><span>WEBP</span><span>SVG</span><small
+              >Maks. 2 MB</small
+            >
+          </div><div id="logo-file-info" class="logo-file-info" hidden>
+            <strong id="logo-file-name"></strong><span id="logo-file-size"></span>
+          </div>
+        </div>
+        <div class="logo-upload-actions">
+          <button id="choose-logo" class="secondary-button" type="button">Pilih logo</button><button
+            id="remove-logo"
+            class="logo-remove-button"
+            type="button"
+            hidden>Hapus</button
+          >
         </div>
       </div>
       <div class="form-grid">
@@ -71,10 +95,43 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
   const form = document.querySelector('#profile-form') as HTMLFormElement
   const message = document.querySelector('#profile-message') as HTMLParagraphElement
   let logoUrl = ''
+  let pendingLogoFile: File | null = null
+  let previewObjectUrl = ''
   const logoInput = document.querySelector('#company_logo') as HTMLInputElement
   const logoPreview = document.querySelector('#logo-preview') as HTMLDivElement
+  const logoDropzone = document.querySelector('#logo-dropzone') as HTMLDivElement
+  const fileInfo = document.querySelector('#logo-file-info') as HTMLDivElement
+  const fileName = document.querySelector('#logo-file-name') as HTMLElement
+  const fileSize = document.querySelector('#logo-file-size') as HTMLElement
+  const removeLogo = document.querySelector('#remove-logo') as HTMLButtonElement
   function showLogo(url: string) {
-    logoPreview.innerHTML = url ? `<img src="${url}" alt="Logo perusahaan" />` : 'LOGO'
+    logoPreview.innerHTML = url
+      ? `<img src="${url}" alt="Logo perusahaan" />`
+      : '<img src="/images/logo-suratku.png" alt="Logo bawaan SuratKu" />'
+    logoDropzone.classList.toggle('has-logo', Boolean(url))
+    removeLogo.hidden = !url
+  }
+  function selectLogo(file: File) {
+    const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
+    if (!allowed.includes(file.type)) {
+      message.textContent = 'Format logo harus PNG, JPG, WebP, atau SVG.'
+      message.className = 'message error'
+      return
+    }
+    if (file.size > 2097152) {
+      message.textContent = 'Ukuran logo maksimal 2 MB.'
+      message.className = 'message error'
+      return
+    }
+    pendingLogoFile = file
+    if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl)
+    previewObjectUrl = URL.createObjectURL(file)
+    showLogo(previewObjectUrl)
+    fileName.textContent = file.name
+    fileSize.textContent = `${file.size >= 1024 * 1024 ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : `${(file.size / 1024).toFixed(1)} KB`} · siap diunggah`
+    fileInfo.hidden = false
+    message.textContent = ''
+    logoDropzone.classList.add('file-ready')
   }
   async function load() {
     const {
@@ -95,7 +152,45 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
   }
   logoInput?.addEventListener('change', () => {
     const file = logoInput.files?.[0]
-    if (file) showLogo(URL.createObjectURL(file))
+    if (file) selectLogo(file)
+  })
+  document.querySelector('#choose-logo')?.addEventListener('click', (event) => {
+    event.stopPropagation()
+    logoInput.click()
+  })
+  logoDropzone.addEventListener('click', (event) => {
+    if (!(event.target as HTMLElement).closest('button')) logoInput.click()
+  })
+  logoDropzone.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      logoInput.click()
+    }
+  })
+  ;['dragenter', 'dragover'].forEach((type) =>
+    logoDropzone.addEventListener(type, (event) => {
+      event.preventDefault()
+      logoDropzone.classList.add('is-dragging')
+    }),
+  )
+  ;['dragleave', 'drop'].forEach((type) =>
+    logoDropzone.addEventListener(type, (event) => {
+      event.preventDefault()
+      logoDropzone.classList.remove('is-dragging')
+    }),
+  )
+  logoDropzone.addEventListener('drop', (event) => {
+    const file = event.dataTransfer?.files?.[0]
+    if (file) selectLogo(file)
+  })
+  removeLogo.addEventListener('click', (event) => {
+    event.stopPropagation()
+    pendingLogoFile = null
+    logoInput.value = ''
+    logoUrl = ''
+    fileInfo.hidden = true
+    logoDropzone.classList.remove('file-ready')
+    showLogo('')
   })
   form?.addEventListener('submit', async (e) => {
     e.preventDefault()
@@ -103,7 +198,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
       data: { user },
     } = await supabase.auth.getUser()
     if (!user) return
-    const file = logoInput.files?.[0]
+    const file = pendingLogoFile || logoInput.files?.[0]
     if (file) {
       if (file.size > 2097152) {
         message.textContent = 'Ukuran logo maksimal 2 MB.'
@@ -132,13 +227,30 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
       company_address: fd.get('company_address'),
       company_phone: fd.get('company_phone'),
       logo_url: logoUrl || null,
-      updated_at: new Date().toISOString(),
     }
-    const { error } = await supabase.from('profiles').upsert(payload)
-    message.textContent = error
-      ? 'Gagal menyimpan. Jalankan migration document builder.'
-      : 'Perubahan berhasil disimpan.'
-    message.className = `message ${error ? 'error' : 'success'}`
+    const { data: updatedProfile, error: updateError } = await supabase
+      .from('profiles')
+      .update(payload)
+      .eq('id', user.id)
+      .select('id')
+      .maybeSingle()
+    let saveError = updateError
+    if (!updateError && !updatedProfile) {
+      const { error: insertError } = await supabase.from('profiles').insert(payload)
+      saveError = insertError
+    }
+    if (saveError) {
+      message.textContent = `Gagal menyimpan profil: ${saveError.message}`
+      message.className = 'message error'
+      return
+    }
+    pendingLogoFile = null
+    logoInput.value = ''
+    logoDropzone.classList.remove('file-ready')
+    showLogo(logoUrl)
+    if (fileInfo.hidden === false) fileSize.textContent = 'Berhasil diunggah dan disimpan'
+    message.textContent = 'Perubahan profil dan logo berhasil disimpan.'
+    message.className = 'message success'
   })
   load()
 </script>

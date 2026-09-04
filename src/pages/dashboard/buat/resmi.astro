@@ -22,10 +22,31 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
     <form id="letter-form" class="composer-grid">
       <div class="composer-form">
         <section class="panel-card design-toolbar">
-          <div>
-            <label for="template_select">Template saya</label><select id="template_select"
-              ><option value="">Surat kosong</option></select
+          <div class="template-picker-control">
+            <label>Template saya</label><input id="template_select" type="hidden" value="" /><button
+              id="template-picker-button"
+              class="template-picker-button"
+              type="button"
+              aria-expanded="false"
             >
+              <span class="template-picker-icon">◇</span><span class="template-picker-copy"
+                ><strong id="selected-template-name">Surat kosong</strong><small
+                  id="selected-template-meta">Mulai dari format surat resmi</small
+                ></span
+              ><span class="template-picker-chevron">⌄</span>
+            </button><div id="template-picker-menu" class="template-picker-menu" hidden>
+              <div class="template-picker-heading">
+                <div>
+                  <strong>Pilih template</strong><small>Gunakan format yang pernah disimpan</small>
+                </div><span id="template-count" class="template-count">0</span>
+              </div><label class="template-picker-search"
+                ><span>⌕</span><input
+                  id="template-picker-search"
+                  type="search"
+                  placeholder="Cari template…"
+                /></label
+              ><div id="composer-template-list" class="composer-template-list"></div>
+            </div>
           </div><div class="font-control">
             <label>Font dokumen</label><select
               id="font_family"
@@ -42,6 +63,14 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
               <div class="font-picker-search">
                 <input id="font-search" type="search" placeholder="Cari font…" />
               </div><div id="font-options" class="font-options"></div>
+            </div>
+          </div><div class="composer-footer-position">
+            <label>Posisi footer</label><div class="footer-alignment-control">
+              <button type="button" data-composer-footer-align="left">Kiri</button><button
+                type="button"
+                data-composer-footer-align="right"
+                class="active">Kanan</button
+              >
             </div>
           </div><button id="save-template" class="secondary-button" type="button"
             >Simpan jadi template</button
@@ -120,19 +149,173 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
               <h2>Isi surat</h2><p>Sampaikan maksud secara ringkas dan profesional.</p>
             </div>
           </div><div class="form-group">
-            <label for="body">Isi utama</label><textarea
+            <label for="body-editor">Isi utama</label><textarea
               id="body"
               name="body"
-              rows="9"
-              placeholder="Dengan hormat,\n\nSehubungan dengan..."
-              required></textarea>
+              class="rich-editor-value"
+              aria-hidden="true"></textarea>
+            <div class="document-editor" data-editor-shell="body-editor">
+              <div class="document-editor-toolbar" role="toolbar" aria-label="Format isi utama">
+                <div class="editor-tool-group editor-history-tools">
+                  <button type="button" data-editor-command="undo" title="Urungkan">↶</button>
+                  <button type="button" data-editor-command="redo" title="Ulangi">↷</button>
+                </div>
+                <select
+                  class="editor-style-select"
+                  data-editor-value-command="formatBlock"
+                  aria-label="Gaya paragraf"
+                >
+                  <option value="p">Paragraf</option><option value="h2">Judul</option><option
+                    value="h3">Subjudul</option
+                  ><option value="blockquote">Kutipan</option>
+                </select>
+                <div class="editor-tool-group">
+                  <button type="button" data-editor-command="bold" title="Tebal"
+                    ><strong>B</strong></button
+                  >
+                  <button type="button" data-editor-command="italic" title="Miring"
+                    ><em>I</em></button
+                  >
+                  <button type="button" data-editor-command="underline" title="Garis bawah"
+                    ><u>U</u></button
+                  >
+                  <button type="button" data-editor-command="strikeThrough" title="Coret"
+                    ><s>S</s></button
+                  >
+                </div>
+                <div class="editor-tool-group">
+                  <button
+                    type="button"
+                    data-editor-command="insertUnorderedList"
+                    title="Daftar poin">• Daftar</button
+                  >
+                  <button type="button" data-editor-command="insertOrderedList" title="Daftar nomor"
+                    >1. Daftar</button
+                  >
+                </div>
+                <div class="editor-tool-group editor-align-tools">
+                  <button type="button" data-editor-command="justifyLeft" title="Rata kiri"
+                    >≡</button
+                  >
+                  <button type="button" data-editor-command="justifyCenter" title="Rata tengah"
+                    >≡</button
+                  >
+                  <button type="button" data-editor-command="justifyRight" title="Rata kanan"
+                    >≡</button
+                  >
+                  <button type="button" data-editor-command="justifyFull" title="Rata kiri-kanan"
+                    >☰</button
+                  >
+                </div>
+                <div class="editor-tool-group editor-color-tools">
+                  <label title="Warna teks"
+                    >A<input
+                      type="color"
+                      value="#172033"
+                      data-editor-color-command="foreColor"
+                    /></label
+                  >
+                  <label class="editor-highlight" title="Warna sorotan"
+                    >▰<input
+                      type="color"
+                      value="#fff2a8"
+                      data-editor-color-command="hiliteColor"
+                    /></label
+                  >
+                  <button type="button" data-editor-action="link" title="Tambahkan tautan">↗</button
+                  >
+                </div>
+                <button type="button" class="editor-clear-format" data-editor-command="removeFormat"
+                  >Hapus format</button
+                >
+              </div>
+              <div
+                id="body-editor"
+                class="document-editor-canvas"
+                contenteditable="true"
+                role="textbox"
+                aria-multiline="true"
+                data-placeholder="Dengan hormat, tuliskan isi surat di sini..."
+              >
+              </div>
+            </div>
           </div><div class="form-group">
-            <label for="closing">Kalimat penutup</label><textarea
+            <label for="closing-editor">Kalimat penutup</label><textarea
               id="closing"
               name="closing"
-              rows="3"
-              placeholder="Demikian surat ini kami sampaikan. Atas perhatian dan kerja samanya, kami ucapkan terima kasih."
-            ></textarea>
+              class="rich-editor-value"
+              aria-hidden="true"></textarea>
+            <div class="document-editor compact" data-editor-shell="closing-editor">
+              <div
+                class="document-editor-toolbar"
+                role="toolbar"
+                aria-label="Format kalimat penutup"
+              >
+                <div class="editor-tool-group editor-history-tools">
+                  <button type="button" data-editor-command="undo" title="Urungkan">↶</button>
+                  <button type="button" data-editor-command="redo" title="Ulangi">↷</button>
+                </div>
+                <select
+                  class="editor-style-select"
+                  data-editor-value-command="formatBlock"
+                  aria-label="Gaya paragraf"
+                >
+                  <option value="p">Paragraf</option><option value="blockquote">Kutipan</option>
+                </select>
+                <div class="editor-tool-group">
+                  <button type="button" data-editor-command="bold"><strong>B</strong></button>
+                  <button type="button" data-editor-command="italic"><em>I</em></button>
+                  <button type="button" data-editor-command="underline"><u>U</u></button>
+                  <button type="button" data-editor-command="strikeThrough" title="Coret"
+                    ><s>S</s></button
+                  >
+                </div>
+                <div class="editor-tool-group editor-align-tools">
+                  <button type="button" data-editor-command="justifyLeft" title="Rata kiri"
+                    >≡</button
+                  >
+                  <button type="button" data-editor-command="justifyCenter" title="Rata tengah"
+                    >≡</button
+                  >
+                  <button type="button" data-editor-command="justifyRight" title="Rata kanan"
+                    >≡</button
+                  >
+                  <button type="button" data-editor-command="justifyFull" title="Rata kiri-kanan"
+                    >☰</button
+                  >
+                </div>
+                <div class="editor-tool-group editor-color-tools">
+                  <label title="Warna teks"
+                    >A<input
+                      type="color"
+                      value="#172033"
+                      data-editor-color-command="foreColor"
+                    /></label
+                  >
+                  <label class="editor-highlight" title="Warna sorotan"
+                    >▰<input
+                      type="color"
+                      value="#fff2a8"
+                      data-editor-color-command="hiliteColor"
+                    /></label
+                  >
+                  <button type="button" data-editor-action="link" title="Tambahkan tautan">↗</button
+                  >
+                </div>
+                <button type="button" class="editor-clear-format" data-editor-command="removeFormat"
+                  >Hapus format</button
+                >
+              </div>
+              <div
+                id="closing-editor"
+                class="document-editor-canvas"
+                contenteditable="true"
+                role="textbox"
+                aria-multiline="true"
+                data-placeholder="Tambahkan kalimat penutup surat..."
+              >
+              </div>
+            </div>
           </div>
         </section>
         <section class="panel-card form-section">
@@ -166,12 +349,18 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
 
       <aside class="preview-pane">
         <div class="preview-label">
-          <span>PREVIEW A4 · KLIK TEKS UNTUK EDIT</span><span
-            >Perubahan tersimpan saat Anda menekan tombol simpan</span
+          <div>
+            <span class="preview-live-dot"></span><span>PREVIEW DOKUMEN</span><strong>A4</strong>
+          </div><span>Klik teks pada kertas untuk mengedit langsung</span><div
+            class="preview-page-badge"
           >
+            Halaman 1
+          </div>
         </div><article id="letter-preview" class="letter-paper">
           <header class="paper-letterhead">
-            <div class="paper-mark" id="p-logo">SK</div><div>
+            <div class="paper-mark" id="p-logo">
+              <img src="/images/logo-suratku.png" alt="Logo SuratKu" />
+            </div><div>
               <strong id="p-company">Nama Perusahaan Anda</strong><small id="p-company-details"
                 >Alamat perusahaan · Telepon</small
               >
@@ -216,6 +405,52 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
       </aside>
     </form>
   </section>
+
+  <div id="save-template-modal" class="save-template-modal" hidden>
+    <div class="save-template-backdrop" data-close-save-template></div>
+    <section
+      class="save-template-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="save-template-title"
+    >
+      <header class="save-template-dialog-head">
+        <span class="save-template-dialog-icon">▤</span><div>
+          <span>SIMPAN FORMAT</span><h2 id="save-template-title">Jadikan template surat</h2><p>
+            Gunakan kembali format ini tanpa mengisi ulang dari awal.
+          </p>
+        </div><button type="button" class="modal-close" data-close-save-template aria-label="Tutup"
+          >×</button
+        >
+      </header>
+      <form id="save-template-form" class="save-template-dialog-body">
+        <label for="new-template-name">Nama template</label><div class="template-name-field">
+          <span>✦</span><input
+            id="new-template-name"
+            type="text"
+            maxlength="80"
+            required
+            autocomplete="off"
+            placeholder="Contoh: Penawaran kerja sama"
+          />
+        </div><small>Pilih nama yang singkat dan mudah ditemukan.</small>
+        <div class="save-template-summary">
+          <div><span>Jenis</span><strong id="save-template-subject">Surat resmi</strong></div><div>
+            <span>Tipografi</span><strong id="save-template-font">Lora</strong>
+          </div><div>
+            <span>Konten</span><strong id="save-template-content">Siap disimpan</strong>
+          </div>
+        </div>
+        <p id="save-template-message" class="message"></p>
+        <footer class="save-template-dialog-actions">
+          <button class="secondary-button" type="button" data-close-save-template>Batal</button
+          ><button id="confirm-save-template" class="primary-button" type="submit"
+            >Simpan template</button
+          >
+        </footer>
+      </form>
+    </section>
+  </div>
 </DashboardLayout>
 
 <script>
@@ -225,11 +460,16 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
   const message = document.querySelector('#form-message') as HTMLElement
   const paper = document.querySelector('#letter-preview') as HTMLElement
   const fontSelect = document.querySelector('#font_family') as HTMLSelectElement
-  const templateSelect = document.querySelector('#template_select') as HTMLSelectElement
+  const templateSelect = document.querySelector('#template_select') as HTMLInputElement
+  const templateButton = document.querySelector('#template-picker-button') as HTMLButtonElement
+  const templateMenu = document.querySelector('#template-picker-menu') as HTMLElement
+  const templateList = document.querySelector('#composer-template-list') as HTMLElement
+  const templateSearch = document.querySelector('#template-picker-search') as HTMLInputElement
   const routeParams = new URLSearchParams(location.search)
   let editingId = routeParams.get('id')
   const initialTemplateId = routeParams.get('template')
   let logoUrl = ''
+  let footerAlignment: 'left' | 'right' = 'right'
   let templates: any[] = []
   const fonts = [
     ['Lora', 'Serif'],
@@ -287,6 +527,8 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
     ;(document.querySelector('#selected-font') as HTMLElement).textContent = name
     fontButton.querySelector('small')!.textContent = category
     fontButton.querySelector('span')!.setAttribute('style', `font-family:'${name}',sans-serif`)
+    bodyEditor.style.fontFamily = `'${name}', sans-serif`
+    closingEditor.style.fontFamily = `'${name}', sans-serif`
     fontMenu.hidden = true
     fontButton.setAttribute('aria-expanded', 'false')
     renderFonts()
@@ -313,6 +555,143 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
   })
   const input = (id: string) =>
     document.querySelector(`#${id}`) as HTMLInputElement | HTMLTextAreaElement
+  const escapeHtml = (value = '') =>
+    value.replace(
+      /[&<>'"]/g,
+      (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]!,
+    )
+  const templateText = (template: any) => {
+    if (!template.content_html) return template.body || ''
+    const element = document.createElement('div')
+    element.innerHTML = template.content_html
+    return element.innerText.trim()
+  }
+  let templateBodyHtml = ''
+  let templateBodyText = ''
+  const bodyEditor = document.querySelector('#body-editor') as HTMLElement
+  const closingEditor = document.querySelector('#closing-editor') as HTMLElement
+  const plainTextToHtml = (value = '') =>
+    value
+      .split(/\n{2,}/)
+      .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, '<br>')}</p>`)
+      .join('')
+  const safeTemplateHtml = (html: string) => {
+    const parsed = new DOMParser().parseFromString(html, 'text/html')
+    parsed.body
+      .querySelectorAll('script,style,iframe,object,embed,form,input,button,link,meta')
+      .forEach((element) => element.remove())
+    parsed.body.querySelectorAll<HTMLElement>('*').forEach((element) => {
+      ;[...element.attributes].forEach((attribute) => {
+        const safeStyles = attribute.value
+          .split(';')
+          .map((rule) => rule.trim())
+          .filter(Boolean)
+        const keepStyle =
+          attribute.name === 'style' &&
+          safeStyles.every((rule) =>
+            /^(text-align\s*:\s*(left|right|center|justify)|color\s*:\s*(#[0-9a-f]{3,8}|rgb\([\d ,.]+\))|background-color\s*:\s*(#[0-9a-f]{3,8}|rgb\([\d ,.]+\)))$/i.test(
+              rule,
+            ),
+          )
+        const keepSafeLink =
+          element.tagName === 'A' &&
+          attribute.name === 'href' &&
+          /^(https?:|mailto:)/i.test(attribute.value)
+        const keepFooterClass = attribute.name === 'class' && attribute.value === 'template-footer'
+        const keepFooterAlignment =
+          attribute.name === 'data-align' && ['left', 'right'].includes(attribute.value)
+        if (!keepStyle && !keepSafeLink && !keepFooterClass && !keepFooterAlignment)
+          element.removeAttribute(attribute.name)
+      })
+    })
+    const seenTitles = new Set<string>()
+    let duplicateStart: Element | null = null
+    for (const paragraph of [...parsed.body.querySelectorAll('p')]) {
+      const title = (paragraph.textContent || '').replace(/\s+/g, ' ').trim()
+      const isDocumentTitle =
+        title.length >= 15 &&
+        title.length <= 100 &&
+        title.startsWith('SURAT ') &&
+        title === title.toUpperCase()
+      if (!isDocumentTitle) continue
+      if (seenTitles.has(title)) {
+        duplicateStart = paragraph
+        break
+      }
+      seenTitles.add(title)
+    }
+    if (duplicateStart) {
+      let node: Element | null = duplicateStart
+      while (node) {
+        const next: Element | null = node.nextElementSibling
+        node.remove()
+        node = next
+      }
+    }
+    if (!parsed.body.querySelector('.template-footer')) {
+      const remainingParagraphs = [...parsed.body.querySelectorAll('p')]
+      const footerStart = remainingParagraphs.findIndex((paragraph) =>
+        /^[\p{L} .'-]+,\s*\d{1,2}\s+\p{L}+\s+\d{4}$/u.test(
+          (paragraph.textContent || '').replace(/\s+/g, ' ').trim(),
+        ),
+      )
+      if (footerStart >= 0) {
+        const footer = parsed.createElement('div')
+        footer.className = 'template-footer'
+        footer.dataset.align = 'left'
+        const footerParagraphs = remainingParagraphs.slice(footerStart, footerStart + 4)
+        footerParagraphs[0].before(footer)
+        footerParagraphs.forEach((paragraph) => footer.appendChild(paragraph))
+      }
+    }
+    const fieldNames = new Set([
+      'nama',
+      'nik',
+      'nrp',
+      'alamat',
+      'jabatan',
+      'grade',
+      'nomor',
+      'no',
+      'no surat',
+      'nomor surat',
+      'tanggal',
+      'tempat',
+      'kepada',
+      'perihal',
+      'lampiran',
+      'lokasi kerja',
+      'lokasi kerja baru',
+    ])
+    const paragraphs = [...parsed.body.querySelectorAll('p')]
+    paragraphs.forEach((paragraph, index) => {
+      const match = (paragraph.textContent || '').trim().match(/^([^:]{1,32})\s*:\s*(.*)$/s)
+      if (!match || !fieldNames.has(match[1].trim().toLowerCase())) return
+      const label = match[1].trim()
+      let value = match[2].trim()
+      if (label.toLowerCase() === 'alamat') {
+        const continuation = paragraphs[index + 1]
+        const continuationText = (continuation?.textContent || '').trim()
+        if (continuation && continuationText && !continuationText.includes(':')) {
+          value = `${value} ${continuationText}`.trim()
+          continuation.remove()
+        }
+      }
+      paragraph.className = 'template-field-row'
+      paragraph.removeAttribute('style')
+      paragraph.innerHTML = `<span>${escapeHtml(label)}</span><b>:</b><span>${escapeHtml(value) || '&nbsp;'}</span>`
+    })
+    return parsed.body.innerHTML
+  }
+  const editorHtml = (editor: HTMLElement) => safeTemplateHtml(editor.innerHTML).trim()
+  const editorText = (editor: HTMLElement) => editor.innerText.replace(/\n{3,}/g, '\n\n').trim()
+  function syncEditorValues() {
+    input('body').value = editorText(bodyEditor)
+    input('closing').value = editorText(closingEditor)
+  }
+  function setEditorContent(editor: HTMLElement, value = '', html = false) {
+    editor.innerHTML = value ? (html ? safeTemplateHtml(value) : plainTextToHtml(value)) : ''
+  }
   const set = (id: string, value: string) =>
     ((document.querySelector(`#${id}`) as HTMLElement).textContent = value)
   const formatDate = (value: string) =>
@@ -334,18 +713,135 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
       [input('recipient_title').value, input('recipient_company').value].filter(Boolean).join(', '),
     )
     set('p-address', input('recipient_address').value || 'di Tempat')
-    set(
-      'p-body',
-      input('body').value || 'Dengan hormat,\n\nIsi surat Anda akan tampil di bagian ini.',
-    )
-    set('p-closing', input('closing').value)
+    const bodyPreview = document.querySelector('#p-body') as HTMLElement
+    syncEditorValues()
+    const currentBodyHtml = editorHtml(bodyEditor)
+    bodyPreview.innerHTML =
+      currentBodyHtml || '<p>Dengan hormat,</p><p>Isi surat Anda akan tampil di bagian ini.</p>'
+    bodyPreview.classList.add('imported-template-body')
+    const closingPreview = document.querySelector('#p-closing') as HTMLElement
+    const currentClosingHtml = editorHtml(closingEditor)
+    const importedFooter = bodyPreview.querySelector<HTMLElement>('.template-footer')
+    if (importedFooter) {
+      const footerParagraphs = importedFooter.querySelectorAll<HTMLElement>(':scope > p')
+      if (footerParagraphs.length >= 2) {
+        footerParagraphs[footerParagraphs.length - 2].textContent =
+          input('sender_name').value || 'Nama Pengirim'
+        footerParagraphs[footerParagraphs.length - 1].textContent =
+          input('sender_title').value || 'Jabatan'
+      }
+      if (currentClosingHtml) {
+        const liveClosing = document.createElement('div')
+        liveClosing.className = 'template-live-closing'
+        liveClosing.innerHTML = currentClosingHtml
+        importedFooter.before(liveClosing)
+      }
+      closingPreview.innerHTML = ''
+    } else {
+      closingPreview.innerHTML = currentClosingHtml
+    }
     set('p-sender', input('sender_name').value || 'Nama Pengirim')
     set('p-sender-title', input('sender_title').value || 'Jabatan')
     paper.style.fontFamily = `'${fontSelect.value}', serif`
+    paper.dataset.footerAlign = footerAlignment
+    paper.querySelectorAll<HTMLElement>('.template-footer').forEach((footer) => {
+      footer.dataset.align = footerAlignment
+    })
     status.textContent = 'Ada perubahan'
   }
-  form?.addEventListener('input', updatePreview)
+  document.querySelectorAll('[data-composer-footer-align]').forEach((button) => {
+    button.addEventListener('click', () => {
+      footerAlignment = ((button as HTMLElement).dataset.composerFooterAlign || 'right') as
+        'left' | 'right'
+      document
+        .querySelectorAll('[data-composer-footer-align]')
+        .forEach((item) => item.classList.toggle('active', item === button))
+      updatePreview()
+    })
+  })
+  form?.addEventListener('input', (event) => {
+    if ((event.target as HTMLElement).closest('.document-editor-canvas')) return
+    updatePreview()
+  })
+  document.querySelectorAll<HTMLElement>('.document-editor-canvas').forEach((editor) => {
+    editor.addEventListener('input', () => {
+      editor.closest('.document-editor')?.classList.remove('invalid')
+      syncEditorValues()
+      if (editor === bodyEditor) {
+        templateBodyHtml = editorHtml(bodyEditor)
+        templateBodyText = input('body').value
+      }
+      updatePreview()
+    })
+  })
+  document.querySelectorAll<HTMLElement>('[data-editor-shell]').forEach((shell) => {
+    let savedRange: Range | null = null
+    const editor = document.querySelector(`#${shell.dataset.editorShell}`) as HTMLElement
+    shell.querySelectorAll<HTMLButtonElement>('[data-editor-command]').forEach((button) => {
+      button.addEventListener('mousedown', (event) => event.preventDefault())
+      button.addEventListener('click', () => {
+        editor.focus()
+        document.execCommand(button.dataset.editorCommand || '', false)
+        editor.dispatchEvent(new Event('input', { bubbles: true }))
+      })
+    })
+    shell.querySelectorAll<HTMLSelectElement>('[data-editor-value-command]').forEach((select) => {
+      select.addEventListener('change', () => {
+        editor.focus()
+        document.execCommand(select.dataset.editorValueCommand || '', false, select.value)
+        editor.dispatchEvent(new Event('input', { bubbles: true }))
+      })
+    })
+    shell.querySelectorAll<HTMLInputElement>('[data-editor-color-command]').forEach((picker) => {
+      picker.addEventListener('input', () => {
+        editor.focus()
+        document.execCommand(picker.dataset.editorColorCommand || '', false, picker.value)
+        editor.dispatchEvent(new Event('input', { bubbles: true }))
+      })
+    })
+    const linkButton = shell.querySelector<HTMLButtonElement>('[data-editor-action="link"]')
+    linkButton?.addEventListener('mousedown', (event) => {
+      event.preventDefault()
+      const selection = window.getSelection()
+      if (selection?.rangeCount) savedRange = selection.getRangeAt(0).cloneRange()
+    })
+    linkButton?.addEventListener('click', () => {
+      shell.querySelector('.editor-link-popover')?.remove()
+      const popover = document.createElement('div')
+      popover.className = 'editor-link-popover'
+      popover.innerHTML =
+        '<input type="url" placeholder="https://alamat-tautan.com"><button type="button">Terapkan</button>'
+      shell.querySelector('.document-editor-toolbar')?.appendChild(popover)
+      const urlInput = popover.querySelector('input') as HTMLInputElement
+      const applyLink = () => {
+        const url = urlInput.value.trim()
+        if (url && savedRange) {
+          const selection = window.getSelection()
+          selection?.removeAllRanges()
+          selection?.addRange(savedRange)
+          document.execCommand('createLink', false, url)
+          editor.dispatchEvent(new Event('input', { bubbles: true }))
+        }
+        popover.remove()
+        editor.focus()
+      }
+      popover.querySelector('button')?.addEventListener('click', applyLink)
+      urlInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') applyLink()
+        if (event.key === 'Escape') popover.remove()
+      })
+      setTimeout(() => urlInput.focus(), 0)
+    })
+  })
   async function save(statusValue: 'draft' | 'final') {
+    syncEditorValues()
+    if (statusValue === 'final' && !editorText(bodyEditor)) {
+      bodyEditor.focus()
+      bodyEditor.closest('.document-editor')?.classList.add('invalid')
+      message.textContent = 'Isi utama surat wajib diisi.'
+      message.className = 'message error'
+      return
+    }
     if (statusValue === 'final' && !form.reportValidity()) return
     const {
       data: { user },
@@ -363,8 +859,8 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
       recipient_title: fd.get('recipient_title') || null,
       recipient_company: fd.get('recipient_company') || null,
       recipient_address: fd.get('recipient_address') || null,
-      body: fd.get('body') || 'Belum diisi',
-      closing: fd.get('closing') || null,
+      body: editorHtml(bodyEditor) || 'Belum diisi',
+      closing: editorHtml(closingEditor) || null,
       sender_name: fd.get('sender_name') || 'Belum diisi',
       sender_title: fd.get('sender_title') || null,
       font_family: fontSelect.value,
@@ -401,51 +897,209 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
     el.addEventListener('input', () => {
       const field = (el as HTMLElement).dataset.field!
       input(field).value = ((el as HTMLElement).innerText || '').replace(/^—$/, '')
+      if (field === 'body') {
+        setEditorContent(bodyEditor, (el as HTMLElement).innerHTML, true)
+        syncEditorValues()
+      }
+      if (field === 'closing') {
+        setEditorContent(closingEditor, (el as HTMLElement).innerHTML, true)
+        syncEditorValues()
+      }
       status.textContent = 'Ada perubahan'
     }),
   )
-  templateSelect?.addEventListener('change', () => {
-    const t = templates.find((x) => x.id === templateSelect.value)
-    if (!t) return
+  function applyTemplate(template: any | null) {
+    templateSelect.value = template?.id || ''
+    ;(document.querySelector('#selected-template-name') as HTMLElement).textContent =
+      template?.name || 'Surat kosong'
+    ;(document.querySelector('#selected-template-meta') as HTMLElement).textContent = template
+      ? `${template.source_filename ? 'Impor DOCX' : 'Template kustom'} · ${template.variables?.length || 0} field`
+      : 'Mulai dari format surat resmi'
+    templateButton.classList.toggle('has-template', Boolean(template))
+    paper.classList.toggle(
+      'has-full-template',
+      Boolean(template?.content_html && template?.source_filename),
+    )
+    templateMenu.hidden = true
+    templateButton.setAttribute('aria-expanded', 'false')
+    renderTemplateOptions()
+    if (!template) {
+      templateBodyHtml = ''
+      templateBodyText = ''
+      footerAlignment = 'right'
+      document
+        .querySelectorAll('[data-composer-footer-align]')
+        .forEach((button) =>
+          button.classList.toggle(
+            'active',
+            (button as HTMLElement).dataset.composerFooterAlign === footerAlignment,
+          ),
+        )
+      updatePreview()
+      return
+    }
+    const t = template
     input('subject').value = t.subject || ''
-    input('body').value = t.body || ''
+    templateBodyText = templateText(t)
+    templateBodyHtml = t.content_html ? safeTemplateHtml(t.content_html) : ''
+    const importedFooter = new DOMParser()
+      .parseFromString(templateBodyHtml, 'text/html')
+      .querySelector<HTMLElement>('.template-footer')
+    footerAlignment = (importedFooter?.dataset.align as 'left' | 'right') || 'right'
+    document
+      .querySelectorAll('[data-composer-footer-align]')
+      .forEach((button) =>
+        button.classList.toggle(
+          'active',
+          (button as HTMLElement).dataset.composerFooterAlign === footerAlignment,
+        ),
+      )
+    input('body').value = templateBodyText
     input('closing').value = t.closing || ''
+    setEditorContent(bodyEditor, templateBodyHtml || templateBodyText, Boolean(templateBodyHtml))
+    setEditorContent(closingEditor, t.closing || '', /<[^>]+>/.test(t.closing || ''))
     const selected = fonts.find(([name]) => name === (t.font_family || 'Lora')) || fonts[0]
     chooseFont(selected[0], selected[1])
+    updatePreview()
+  }
+  function renderTemplateOptions() {
+    const query = templateSearch.value.trim().toLowerCase()
+    const filtered = templates.filter((template) => template.name.toLowerCase().includes(query))
+    ;(document.querySelector('#template-count') as HTMLElement).textContent = String(
+      templates.length,
+    )
+    templateList.innerHTML = `
+      <button type="button" class="composer-template-option ${templateSelect.value ? '' : 'active'}" data-template-id="">
+        <span class="composer-template-icon blank">◇</span>
+        <span><strong>Surat kosong</strong><small>Mulai tanpa template</small></span><b>✓</b>
+      </button>
+      ${filtered
+        .map(
+          (
+            template,
+          ) => `<button type="button" class="composer-template-option ${templateSelect.value === template.id ? 'active' : ''}" data-template-id="${template.id}">
+            <span class="composer-template-icon">▤</span>
+            <span><strong>${escapeHtml(template.name)}</strong><small>${template.source_filename ? 'DOCX · ' + escapeHtml(template.source_filename) : 'Template kustom'} · ${template.variables?.length || 0} field</small></span><b>✓</b>
+          </button>`,
+        )
+        .join('')}
+      ${filtered.length ? '' : '<div class="composer-template-empty"><span>⌕</span><strong>Template tidak ditemukan</strong><small>Coba kata kunci lain.</small></div>'}
+    `
+  }
+  templateButton.addEventListener('click', () => {
+    templateMenu.hidden = !templateMenu.hidden
+    templateButton.setAttribute('aria-expanded', String(!templateMenu.hidden))
+    if (!templateMenu.hidden) {
+      renderTemplateOptions()
+      setTimeout(() => templateSearch.focus(), 0)
+    }
   })
-  document.querySelector('#save-template')?.addEventListener('click', async () => {
-    const name = prompt('Nama template ini:')
-    if (!name) return
+  templateSearch.addEventListener('input', renderTemplateOptions)
+  templateList.addEventListener('click', (event) => {
+    const option = (event.target as HTMLElement).closest('[data-template-id]') as HTMLElement | null
+    if (!option) return
+    applyTemplate(templates.find((template) => template.id === option.dataset.templateId) || null)
+  })
+  document.addEventListener('click', (event) => {
+    if (!(event.target as HTMLElement).closest('.template-picker-control')) {
+      templateMenu.hidden = true
+      templateButton.setAttribute('aria-expanded', 'false')
+    }
+  })
+  const saveTemplateModal = document.querySelector('#save-template-modal') as HTMLElement
+  const saveTemplateForm = document.querySelector('#save-template-form') as HTMLFormElement
+  const newTemplateName = document.querySelector('#new-template-name') as HTMLInputElement
+  const saveTemplateMessage = document.querySelector('#save-template-message') as HTMLElement
+  const confirmSaveTemplate = document.querySelector('#confirm-save-template') as HTMLButtonElement
+  function openSaveTemplateModal() {
+    const subject = input('subject').value.trim()
+    newTemplateName.value = subject ? `Template ${subject}` : ''
+    ;(document.querySelector('#save-template-subject') as HTMLElement).textContent =
+      subject || 'Surat resmi'
+    ;(document.querySelector('#save-template-font') as HTMLElement).textContent = fontSelect.value
+    ;(document.querySelector('#save-template-content') as HTMLElement).textContent = input(
+      'body',
+    ).value.trim()
+      ? 'Isi & penutup tersedia'
+      : 'Belum ada isi surat'
+    saveTemplateMessage.textContent = ''
+    saveTemplateMessage.className = 'message'
+    saveTemplateModal.hidden = false
+    document.body.classList.add('modal-open')
+    setTimeout(() => {
+      newTemplateName.focus()
+      newTemplateName.select()
+    }, 0)
+  }
+  function closeSaveTemplateModal() {
+    saveTemplateModal.hidden = true
+    document.body.classList.remove('modal-open')
+    confirmSaveTemplate.disabled = false
+    confirmSaveTemplate.textContent = 'Simpan template'
+  }
+  document.querySelector('#save-template')?.addEventListener('click', openSaveTemplateModal)
+  document
+    .querySelectorAll('[data-close-save-template]')
+    .forEach((element) => element.addEventListener('click', closeSaveTemplateModal))
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !saveTemplateModal.hidden) closeSaveTemplateModal()
+  })
+  saveTemplateForm.addEventListener('submit', async (event) => {
+    event.preventDefault()
+    const name = newTemplateName.value.trim()
+    if (!name) {
+      newTemplateName.focus()
+      return
+    }
+    confirmSaveTemplate.disabled = true
+    confirmSaveTemplate.textContent = 'Menyimpan…'
     const {
       data: { user },
     } = await supabase.auth.getUser()
-    if (!user) return
+    if (!user) {
+      saveTemplateMessage.textContent = 'Sesi Anda berakhir. Silakan login kembali.'
+      saveTemplateMessage.className = 'message error'
+      confirmSaveTemplate.disabled = false
+      confirmSaveTemplate.textContent = 'Simpan template'
+      return
+    }
     const { error } = await supabase.from('letter_templates').insert({
       user_id: user.id,
       name,
       subject: input('subject').value,
       body: input('body').value,
       closing: input('closing').value,
+      content_html: editorHtml(bodyEditor),
       font_family: fontSelect.value,
     })
-    message.textContent = error
-      ? 'Template gagal disimpan. Jalankan migration terbaru.'
-      : 'Template baru berhasil disimpan.'
-    message.className = `message ${error ? 'error' : 'success'}`
-    if (!error) loadTemplates()
+    if (error) {
+      saveTemplateMessage.textContent = 'Template gagal disimpan. Silakan coba kembali.'
+      saveTemplateMessage.className = 'message error'
+      confirmSaveTemplate.disabled = false
+      confirmSaveTemplate.textContent = 'Simpan template'
+      return
+    }
+    saveTemplateMessage.textContent = 'Template berhasil disimpan.'
+    saveTemplateMessage.className = 'message success'
+    message.textContent = 'Template baru tersedia pada daftar Template saya.'
+    message.className = 'message success'
+    await loadTemplates()
+    setTimeout(closeSaveTemplateModal, 700)
   })
   async function loadTemplates() {
-    const { data } = await supabase
+    templateList.innerHTML = '<div class="composer-template-loading">Memuat template…</div>'
+    const { data, error } = await supabase
       .from('letter_templates')
       .select('*')
       .order('created_at', { ascending: false })
+    if (error) {
+      templateList.innerHTML = `<div class="composer-template-empty error"><strong>Template gagal dimuat</strong><small>${escapeHtml(error.message)}</small></div>`
+      return
+    }
     templates = data || []
-    templateSelect.innerHTML =
-      '<option value="">Surat kosong</option>' +
-      templates.map((t) => `<option value="${t.id}">${t.name}</option>`).join('')
+    renderTemplateOptions()
     if (initialTemplateId && !editingId) {
-      templateSelect.value = initialTemplateId
-      templateSelect.dispatchEvent(new Event('change'))
+      applyTemplate(templates.find((template) => template.id === initialTemplateId) || null)
     }
   }
   const presetCopy: Record<
@@ -608,6 +1262,8 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
     input('subject').value = preset.subject
     input('body').value = preset.body
     input('closing').value = preset.closing
+    setEditorContent(bodyEditor, preset.body)
+    setEditorContent(closingEditor, preset.closing)
     document.querySelector('.composer-header h1')!.textContent = preset.title
   }
   async function init() {
@@ -646,6 +1302,10 @@ import DashboardLayout from '../../../layouts/DashboardLayout.astro'
           if (el && value != null) el.value = String(value)
         })
         fontSelect.value = letter.font_family || 'Lora'
+        const savedBody = String(letter.body || '')
+        const savedClosing = String(letter.closing || '')
+        setEditorContent(bodyEditor, savedBody, /<[^>]+>/.test(savedBody))
+        setEditorContent(closingEditor, savedClosing, /<[^>]+>/.test(savedClosing))
         logoUrl = letter.logo_url || logoUrl
         document.querySelector('.composer-header h1')!.textContent = 'Edit surat'
       }

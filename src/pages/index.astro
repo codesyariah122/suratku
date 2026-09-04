@@ -2,466 +2,895 @@
 import Layout from '../layouts/Layout.astro'
 ---
 
-<Layout title="SuratKu - Generator Surat Digital">
-  <main class="landing-page">
-    <nav class="landing-nav">
-      <div class="landing-brand">SuratKu</div>
-
-      <div class="landing-nav-actions">
-        <a href="/login" class="btn-login"> Login </a>
-
-        <a href="/register" class="btn-register"> Buat Akun </a>
+<Layout title="SuratKu — Surat Resmi, Selesai dalam Menit">
+  <main class="marketing-page">
+    <nav class="marketing-nav">
+      <a href="/" class="marketing-brand"
+        ><img src="/images/logo-suratku.png" alt="Logo SuratKu" /><span
+          ><strong>SuratKu</strong><small>DOCUMENT BUILDER</small></span
+        ></a
+      >
+      <div class="nav-links">
+        <a href="#fitur">Fitur</a><a href="#cara-kerja">Cara kerja</a><a href="#template"
+          >Template</a>
+      </div>
+      <div class="nav-actions">
+        <a href="/login" class="nav-login">Masuk</a><a href="/register" class="nav-register"
+          >Mulai gratis <span>→</span></a>
       </div>
     </nav>
 
-    <section class="hero-section">
-      <div class="hero-content">
-        <span class="hero-badge"> Generator Surat Digital </span>
-
-        <h1>
-          Buat Surat Resmi
-          <span>Lebih Cepat & Mudah</span>
-        </h1>
-
+    <section class="marketing-hero">
+      <div class="hero-glow"></div><div class="hero-copy">
+        <div class="hero-kicker"><span></span>Platform dokumen resmi untuk bisnis modern</div>
+        <h1>Surat perusahaan yang <em>siap dikirim,</em> bukan sekadar diketik.</h1>
         <p>
-          SuratKu membantu kamu membuat berbagai jenis surat secara cepat, rapi, dan profesional.
+          Buat, sesuaikan, simpan, dan unduh surat resmi dalam hitungan menit. Format selalu
+          konsisten—tanpa mengatur ulang dokumen dari nol.
         </p>
-
         <div class="hero-actions">
-          <a href="/register" class="hero-primary"> Mulai Sekarang </a>
-
-          <a href="/login" class="hero-secondary"> Sudah punya akun? </a>
+          <a href="/register" class="hero-primary">Buat surat pertama <span>→</span></a><a
+            href="#cara-kerja"
+            class="hero-secondary"><i>▶</i> Lihat cara kerja</a>
+        </div>
+        <div class="hero-proof">
+          <div class="proof-avatars"><span>SK</span><span>HR</span><span>GA</span></div><div>
+            <strong>Lebih cepat. Lebih konsisten.</strong><small
+              >Dibangun untuk administrasi perusahaan.</small>
+          </div>
         </div>
       </div>
-
-      <div class="hero-card">
-        <div class="document-preview">
-          <div class="document-header">
-            <div class="document-logo">SK</div>
-
-            <div>
-              <strong>SURATKU</strong>
-              <small>Generator Surat Digital</small>
+      <div class="hero-visual" aria-label="Contoh dokumen SuratKu">
+        <div class="visual-chip chip-top">
+          <i>✓</i><span><strong>Siap diunduh</strong><small>Format PDF A4</small></span>
+        </div>
+        <article class="hero-document">
+          <header>
+            <img src="/images/logo-suratku.png" alt="Logo SuratKu" /><div>
+              <strong>PT SURATKU INDONESIA</strong><small>Dokumen resmi perusahaan</small>
             </div>
+          </header><div class="doc-rule"></div><p class="doc-date">Bandung, 4 September 2026</p><div
+            class="doc-title"
+          >
+            <strong>SURAT KETERANGAN KERJA</strong><span>Nomor: 014/SK/HR/IX/2026</span>
+          </div><dl>
+            <div><dt>Nama</dt><dd>: Putra Apriandi</dd></div><div>
+              <dt>Jabatan</dt><dd>: Operations Manager</dd>
+            </div><div><dt>Perusahaan</dt><dd>: PT SuratKu Indonesia</dd></div>
+          </dl><p>
+            Dengan ini menerangkan bahwa nama tersebut merupakan karyawan aktif dan menjalankan
+            tanggung jawabnya secara profesional.
+          </p><p>Surat ini dibuat untuk dipergunakan sebagaimana mestinya.</p><div class="doc-sign">
+            <span>Hormat kami,</span><b>Puji Ermanto</b><small>Human Capital Manager</small>
           </div>
-
-          <div class="document-line large"></div>
-          <div class="document-line"></div>
-          <div class="document-line"></div>
-          <div class="document-line short"></div>
-
-          <div class="document-content">
-            <div class="document-line"></div>
-            <div class="document-line"></div>
-            <div class="document-line short"></div>
-          </div>
-
-          <div class="document-signature">
-            <div class="document-line short"></div>
-            <strong>Penandatangan</strong>
-          </div>
+        </article>
+        <div class="visual-chip chip-bottom">
+          <i>⌁</i><span><strong>24+ jenis surat</strong><small>Siap digunakan</small></span>
         </div>
       </div>
     </section>
 
-    <section class="features-section">
-      <div class="section-heading">
-        <span>KENAPA SURATKU?</span>
-
-        <h2>Semua kebutuhan surat dalam satu tempat</h2>
-
-        <p>Buat surat dengan proses yang sederhana tanpa perlu membuat format dari awal.</p>
+    <section class="trust-strip">
+      <span>DIBUAT UNTUK</span><div>
+        <b>Human Resources</b><b>General Affairs</b><b>Operations</b><b>Business Owner</b>
       </div>
+    </section>
 
-      <div class="features-grid">
-        <article class="feature-card">
-          <div class="feature-icon">01</div>
-
-          <h3>Mudah Digunakan</h3>
-
-          <p>Pilih template, isi data, dan surat siap digunakan.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-icon">02</div>
-
-          <h3>Template Profesional</h3>
-
-          <p>Gunakan template surat yang rapi dan siap pakai.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-icon">03</div>
-
-          <h3>Kelola Surat</h3>
-
-          <p>Simpan dan kelola surat yang sudah kamu buat.</p>
+    <section id="fitur" class="feature-section section-wrap">
+      <div class="section-intro">
+        <span class="section-kicker">BEKERJA LEBIH CERDAS</span><h2>
+          Satu ruang kerja untuk seluruh siklus surat.
+        </h2><p>
+          Dari template sampai PDF final, setiap langkah dirancang agar mudah dipahami dan tetap
+          terlihat profesional.
+        </p>
+      </div>
+      <div class="feature-bento">
+        <article class="feature-large">
+          <span class="feature-number">01</span><div class="mini-editor">
+            <div><b>B</b><i>I</i><u>U</u><span>☰</span><span>≡</span></div><p>
+              <strong>SURAT PENAWARAN KERJA SAMA</strong>
+            </p><p>Dengan hormat, melalui surat ini kami mengajukan...</p>
+          </div><h3>Editor dokumen yang terasa familiar</h3><p>
+            Atur judul, paragraf, warna, daftar, dan alignment sambil melihat hasilnya langsung.
+          </p>
+        </article><article>
+          <span class="feature-icon">▤</span><h3>Template fleksibel</h3><p>
+            Gunakan template siap pakai, buat sendiri, atau impor langsung dari Word.
+          </p>
+        </article><article>
+          <span class="feature-icon">↓</span><h3>PDF siap kirim</h3><p>
+            Preview A4 proporsional dan unduh PDF profesional dalam satu klik.
+          </p>
+        </article><article>
+          <span class="feature-icon">⌕</span><h3>Arsip selalu rapi</h3><p>
+            Cari, edit, dan kelola seluruh surat perusahaan dari satu dashboard.
+          </p>
+        </article><article class="feature-dark">
+          <span class="feature-icon">✦</span><h3>Identitas konsisten</h3><p>
+            Logo, nama perusahaan, alamat, font, dan penandatangan mengikuti profil.
+          </p><div class="consistency-line">
+            <i></i><span>Brand consistency</span><strong>100%</strong>
+          </div>
         </article>
       </div>
     </section>
 
-    <section class="cta-section">
-      <h2>Siap membuat surat?</h2>
-
-      <p>Buat akun gratis dan mulai gunakan SuratKu.</p>
-
-      <a href="/register" class="hero-primary"> Buat Akun Sekarang </a>
+    <section id="cara-kerja" class="workflow-section">
+      <div class="section-wrap workflow-grid">
+        <div class="workflow-copy">
+          <span class="section-kicker gold">ALUR SEDERHANA</span><h2>
+            Dari kebutuhan menjadi dokumen final.
+          </h2><p>
+            Tidak perlu mahir Microsoft Word. SuratKu menjaga struktur dokumen agar hasil akhir
+            tetap formal dan enak dibaca.
+          </p><a href="/register">Coba sekarang <span>→</span></a>
+        </div><ol>
+          <li>
+            <span>01</span><div>
+              <strong>Pilih jenis atau template</strong><p>
+                Mulai dari format profesional atau template perusahaan.
+              </p>
+            </div>
+          </li><li>
+            <span>02</span><div>
+              <strong>Isi dan sesuaikan dokumen</strong><p>
+                Gunakan editor modern dengan preview realtime.
+              </p>
+            </div>
+          </li><li>
+            <span>03</span><div>
+              <strong>Simpan dan download PDF</strong><p>
+                Arsipkan sebagai draf atau final, lalu unduh dokumen A4.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
     </section>
 
-    <footer class="landing-footer">
-      <strong>SuratKu</strong>
+    <section id="template" class="template-showcase section-wrap">
+      <div class="section-intro centered">
+        <span class="section-kicker">KATALOG PROFESIONAL</span><h2>
+          Satu aplikasi, berbagai kebutuhan surat.
+        </h2><p>Pilih format yang tepat untuk komunikasi internal maupun eksternal.</p>
+      </div><div class="template-tags">
+        <span>Surat Penawaran</span><span>Surat Permohonan</span><span>Surat Undangan</span><span
+          >SK Mutasi</span
+        ><span>Surat Keterangan Kerja</span><span>Surat Peringatan</span><span>Berita Acara</span
+        ><span>Surat Kerja Sama</span><span>+ template Anda sendiri</span>
+      </div>
+    </section>
 
-      <span> © 2026 SuratKu. Semua hak dilindungi. </span>
+    <section class="final-cta section-wrap">
+      <div>
+        <span>Mulai lebih rapi hari ini</span><h2>
+          Administrasi profesional dimulai dari surat yang tepat.
+        </h2><p>Buat akun dan siapkan dokumen resmi pertama Anda bersama SuratKu.</p>
+      </div><a href="/register">Mulai gratis sekarang <span>→</span></a>
+    </section>
+    <footer class="marketing-footer">
+      <a href="/" class="marketing-brand"
+        ><img src="/images/logo-suratku.png" alt="" /><span
+          ><strong>SuratKu</strong><small>DOCUMENT BUILDER</small></span
+        ></a
+      ><p>Dokumen resmi. Proses lebih pasti.</p><span>© 2026 SuratKu. Semua hak dilindungi.</span>
     </footer>
   </main>
 </Layout>
 
 <style>
-  .landing-page {
+  .marketing-page {
     min-height: 100vh;
-    background: #f8fafc;
-    color: #111827;
+    overflow: hidden;
+    background: #f6f8fc;
+    color: #111a2d;
   }
-
-  .landing-nav {
-    width: min(1120px, calc(100% - 48px));
-    margin: 0 auto;
-    height: 76px;
+  .marketing-nav {
+    position: relative;
+    z-index: 10;
     display: flex;
+    width: min(1240px, calc(100% - 48px));
+    height: 84px;
     align-items: center;
     justify-content: space-between;
+    margin: auto;
   }
-
-  .landing-brand {
-    font-size: 22px;
-    font-weight: 800;
-    color: #111827;
-  }
-
-  .landing-nav-actions {
+  .marketing-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
-  }
-
-  .landing-nav a {
+    gap: 11px;
+    color: #111a2d;
     text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
   }
-
-  .btn-login {
-    color: #374151;
-    padding: 10px 16px;
+  .marketing-brand img {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 8px 20px #10203d2b;
   }
-
-  .btn-register {
-    padding: 10px 18px;
-    color: white;
-    background: #2563eb;
-    border-radius: 8px;
+  .marketing-brand span {
+    display: flex;
+    flex-direction: column;
   }
-
-  .hero-section {
-    width: min(1120px, calc(100% - 48px));
-    margin: 0 auto;
-    min-height: 620px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    gap: 80px;
+  .marketing-brand strong {
+    font-size: 19px;
+    letter-spacing: -0.4px;
   }
-
-  .hero-badge {
-    display: inline-block;
-    margin-bottom: 18px;
-    padding: 7px 12px;
-    border-radius: 999px;
-    background: #dbeafe;
-    color: #1d4ed8;
-    font-size: 13px;
-    font-weight: 700;
+  .marketing-brand small {
+    color: #8a94a5;
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
   }
-
-  .hero-content h1 {
-    margin: 0;
-    max-width: 650px;
-    font-size: clamp(42px, 5vw, 64px);
-    line-height: 1.05;
-    letter-spacing: -2px;
-  }
-
-  .hero-content h1 span {
-    display: block;
-    color: #2563eb;
-  }
-
-  .hero-content > p {
-    max-width: 560px;
-    margin: 24px 0 32px;
-    color: #6b7280;
-    font-size: 17px;
-    line-height: 1.7;
-  }
-
-  .hero-actions {
+  .nav-links,
+  .nav-actions {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 28px;
   }
-
-  .hero-primary,
-  .hero-secondary {
+  .nav-links a,
+  .nav-login {
+    color: #5f6b7d;
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: none;
+  }
+  .nav-links a:hover,
+  .nav-login:hover {
+    color: #1d4ed8;
+  }
+  .nav-register,
+  .hero-primary {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 0 20px;
-    border-radius: 9px;
+    gap: 12px;
+    border-radius: 10px;
+    background: #172b4d;
+    color: #fff;
+    font-weight: 750;
     text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
+    box-shadow: 0 9px 24px #172b4d29;
   }
-
-  .hero-primary {
-    background: #2563eb;
-    color: white;
+  .nav-register {
+    height: 44px;
+    padding: 0 17px;
+    font-size: 12px;
   }
-
-  .hero-secondary {
-    color: #374151;
-    background: white;
-    border: 1px solid #e5e7eb;
+  .marketing-hero {
+    position: relative;
+    display: grid;
+    width: min(1240px, calc(100% - 48px));
+    min-height: 690px;
+    grid-template-columns: 1.03fr 0.97fr;
+    align-items: center;
+    gap: 80px;
+    margin: auto;
+    padding: 42px 0 82px;
   }
-
-  .hero-card {
+  .hero-glow {
+    position: absolute;
+    top: 2%;
+    right: -20%;
+    width: 720px;
+    height: 720px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #d9e8ff, transparent 67%);
+  }
+  .hero-copy,
+  .hero-visual {
+    position: relative;
+    z-index: 1;
+  }
+  .hero-kicker {
     display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 22px;
+    color: #3c5a88;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .hero-kicker span {
+    width: 28px;
+    height: 2px;
+    background: #d6aa36;
+  }
+  .hero-copy h1 {
+    max-width: 690px;
+    margin: 0;
+    font-size: clamp(48px, 5.5vw, 76px);
+    font-weight: 740;
+    line-height: 0.99;
+    letter-spacing: -3.7px;
+  }
+  .hero-copy h1 em {
+    display: block;
+    color: #2563eb;
+    font-family: Georgia, serif;
+    font-weight: 500;
+  }
+  .hero-copy > p {
+    max-width: 610px;
+    margin: 27px 0 31px;
+    color: #697487;
+    font-size: 17px;
+    line-height: 1.72;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+  }
+  .hero-primary {
+    min-height: 52px;
+    padding: 0 21px;
+    background: #2563eb;
+    font-size: 13px;
+  }
+  .hero-secondary {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    gap: 9px;
+    padding: 0 18px;
+    border: 1px solid #dae1ec;
+    border-radius: 10px;
+    background: #fff;
+    color: #435067;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .hero-secondary i {
+    display: grid;
+    width: 25px;
+    height: 25px;
+    place-items: center;
+    border-radius: 50%;
+    background: #edf4ff;
+    color: #2563eb;
+    font-size: 8px;
+  }
+  .hero-proof {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 31px;
+  }
+  .proof-avatars {
+    display: flex;
+  }
+  .proof-avatars span {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    margin-left: -7px;
+    border: 3px solid #f6f8fc;
+    border-radius: 50%;
+    background: #e8eff9;
+    color: #233b63;
+    font-size: 9px;
+    font-weight: 850;
+  }
+  .proof-avatars span:first-child {
+    margin-left: 0;
+    background: #172b4d;
+    color: #f3c84c;
+  }
+  .hero-proof > div:last-child {
+    display: flex;
+    flex-direction: column;
+  }
+  .hero-proof strong {
+    font-size: 11px;
+  }
+  .hero-proof small {
+    color: #8590a1;
+    font-size: 9px;
+  }
+  .hero-visual {
+    display: flex;
+    min-height: 590px;
+    align-items: center;
     justify-content: center;
   }
-
-  .document-preview {
-    width: min(100%, 420px);
-    min-height: 500px;
-    padding: 36px;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    box-shadow:
-      0 30px 60px rgba(15, 23, 42, 0.1),
-      0 8px 20px rgba(15, 23, 42, 0.05);
-    transform: rotate(2deg);
+  .hero-document {
+    box-sizing: border-box;
+    width: 435px;
+    min-height: 565px;
+    padding: 36px 39px;
+    border: 1px solid #dfe4eb;
+    border-radius: 7px;
+    background: #fffefa;
+    box-shadow: 0 38px 80px #14233c24;
+    transform: rotate(1.6deg);
+    font-family: Georgia, serif;
+    font-size: 10px;
+    line-height: 1.55;
   }
-
-  .document-header {
+  .hero-document header {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding-bottom: 24px;
-    border-bottom: 2px solid #e5e7eb;
   }
-
-  .document-logo {
-    width: 42px;
-    height: 42px;
+  .hero-document header img {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+  }
+  .hero-document header div,
+  .doc-sign {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background: #2563eb;
-    color: white;
-    font-size: 14px;
-    font-weight: 800;
+    flex-direction: column;
   }
-
-  .document-header strong {
-    display: block;
-    font-size: 14px;
-  }
-
-  .document-header small {
-    display: block;
-    margin-top: 3px;
-    color: #9ca3af;
-    font-size: 10px;
-  }
-
-  .document-line {
-    width: 100%;
-    height: 8px;
-    margin-top: 14px;
-    border-radius: 4px;
-    background: #e5e7eb;
-  }
-
-  .document-line.large {
-    width: 75%;
-    height: 14px;
-    margin-top: 32px;
-  }
-
-  .document-line.short {
-    width: 55%;
-  }
-
-  .document-content {
-    margin-top: 42px;
-  }
-
-  .document-signature {
-    width: 45%;
-    margin-top: 70px;
-    margin-left: auto;
-  }
-
-  .document-signature strong {
-    display: block;
-    margin-top: 10px;
-    font-size: 10px;
-    color: #6b7280;
-    text-align: center;
-  }
-
-  .features-section {
-    width: min(1120px, calc(100% - 48px));
-    margin: 80px auto;
-  }
-
-  .section-heading {
-    max-width: 650px;
-    margin-bottom: 40px;
-  }
-
-  .section-heading > span {
-    color: #2563eb;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 1px;
-  }
-
-  .section-heading h2 {
-    margin: 10px 0;
-    font-size: 34px;
-    line-height: 1.2;
-  }
-
-  .section-heading p {
-    color: #6b7280;
-    line-height: 1.7;
-  }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .feature-card {
-    padding: 28px;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-  }
-
-  .feature-icon {
-    width: 42px;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    background: #eff6ff;
-    color: #2563eb;
-    font-size: 12px;
-    font-weight: 800;
-  }
-
-  .feature-card h3 {
-    margin: 0 0 8px;
-    font-size: 18px;
-  }
-
-  .feature-card p {
-    margin: 0;
-    color: #6b7280;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-
-  .cta-section {
-    width: min(900px, calc(100% - 48px));
-    margin: 120px auto 80px;
-    padding: 70px 30px;
-    text-align: center;
-    background: #eff6ff;
-    border: 1px solid #dbeafe;
-    border-radius: 20px;
-  }
-
-  .cta-section h2 {
-    margin: 0;
-    font-size: 36px;
-  }
-
-  .cta-section p {
-    margin: 12px 0 28px;
-    color: #6b7280;
-  }
-
-  .landing-footer {
-    width: min(1120px, calc(100% - 48px));
-    margin: 0 auto;
-    padding: 30px 0;
-    display: flex;
-    justify-content: space-between;
-    border-top: 1px solid #e5e7eb;
-    color: #6b7280;
+  .hero-document header strong {
     font-size: 13px;
   }
-
-  @media (max-width: 800px) {
-    .hero-section {
-      grid-template-columns: 1fr;
-      gap: 40px;
-      padding: 60px 0;
-    }
-
-    .hero-content h1 {
-      font-size: 44px;
-    }
-
-    .features-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .hero-card {
+  .hero-document header small {
+    color: #777;
+    font-size: 8px;
+  }
+  .doc-rule {
+    margin: 13px 0 19px;
+    border-top: 3px double #172033;
+  }
+  .doc-date {
+    text-align: right;
+  }
+  .doc-title {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 25px 0 22px;
+  }
+  .doc-title strong {
+    font-size: 13px;
+    text-decoration: underline;
+  }
+  .hero-document dl div {
+    display: grid;
+    grid-template-columns: 82px 1fr;
+  }
+  .hero-document dt,
+  .hero-document dd {
+    margin: 0;
+  }
+  .hero-document > p {
+    text-align: justify;
+  }
+  .doc-sign {
+    width: 48%;
+    margin: 44px 0 0 auto;
+    text-align: center;
+  }
+  .doc-sign b {
+    margin-top: 56px;
+    text-decoration: underline;
+  }
+  .visual-chip {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border: 1px solid #e1e7ef;
+    border-radius: 12px;
+    background: #ffffffed;
+    box-shadow: 0 16px 40px #16243d26;
+  }
+  .visual-chip i {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 9px;
+    background: #dcfce7;
+    color: #15803d;
+    font-style: normal;
+  }
+  .visual-chip span {
+    display: flex;
+    flex-direction: column;
+  }
+  .visual-chip strong {
+    font-size: 11px;
+  }
+  .visual-chip small {
+    color: #8a94a4;
+    font-size: 8px;
+  }
+  .chip-top {
+    top: 85px;
+    right: -5px;
+  }
+  .chip-bottom {
+    bottom: 74px;
+    left: -13px;
+  }
+  .chip-bottom i {
+    background: #fff5d9;
+    color: #a16e00;
+  }
+  .trust-strip {
+    display: flex;
+    min-height: 94px;
+    align-items: center;
+    justify-content: center;
+    gap: 65px;
+    border-block: 1px solid #e1e6ed;
+    background: #fff;
+  }
+  .trust-strip > span {
+    color: #9aa3b2;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: 0.17em;
+  }
+  .trust-strip div {
+    display: flex;
+    gap: 48px;
+  }
+  .trust-strip b {
+    color: #657185;
+    font-size: 12px;
+  }
+  .section-wrap {
+    width: min(1240px, calc(100% - 48px));
+    margin-inline: auto;
+  }
+  .feature-section,
+  .template-showcase {
+    padding: 115px 0;
+  }
+  .section-intro {
+    max-width: 700px;
+  }
+  .section-kicker {
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+  }
+  .section-intro h2,
+  .workflow-copy h2 {
+    margin: 12px 0 15px;
+    font-size: clamp(36px, 4vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -2px;
+  }
+  .section-intro p,
+  .workflow-copy > p {
+    margin: 0;
+    color: #737e90;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .feature-bento {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr 0.75fr;
+    gap: 16px;
+    margin-top: 48px;
+  }
+  .feature-bento article {
+    min-height: 210px;
+    padding: 27px;
+    border: 1px solid #e0e6ee;
+    border-radius: 17px;
+    background: #fff;
+  }
+  .feature-bento h3 {
+    margin: 18px 0 8px;
+    font-size: 18px;
+  }
+  .feature-bento p {
+    margin: 0;
+    color: #748094;
+    font-size: 12px;
+    line-height: 1.65;
+  }
+  .feature-large {
+    grid-row: span 2;
+  }
+  .feature-number {
+    color: #a6b0bf;
+    font-size: 10px;
+  }
+  .mini-editor {
+    margin: 20px 0 26px;
+    overflow: hidden;
+    border: 1px solid #dfe5ee;
+    border-radius: 11px;
+    background: #fbfcfe;
+  }
+  .mini-editor > div {
+    display: flex;
+    gap: 19px;
+    padding: 11px 14px;
+    border-bottom: 1px solid #e5eaf1;
+  }
+  .mini-editor p {
+    padding: 0 17px;
+    color: #2a3447;
+  }
+  .feature-icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 11px;
+    background: #eef5ff;
+    color: #2563eb;
+    font-weight: 850;
+  }
+  .feature-dark {
+    background: linear-gradient(145deg, #152847, #0e1c33) !important;
+    color: #fff;
+  }
+  .feature-dark p {
+    color: #bac7d9 !important;
+  }
+  .feature-dark .feature-icon {
+    background: #ffffff17;
+    color: #f1c94d;
+  }
+  .consistency-line {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin-top: 27px;
+  }
+  .consistency-line i {
+    grid-column: 1/-1;
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #e6bd43, #f4d777);
+  }
+  .workflow-section {
+    padding: 110px 0;
+    background: #142746;
+    color: #fff;
+  }
+  .workflow-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 100px;
+    align-items: center;
+  }
+  .section-kicker.gold {
+    color: #e9c456;
+  }
+  .workflow-copy > p {
+    color: #b8c4d5;
+  }
+  .workflow-copy > a {
+    display: inline-flex;
+    gap: 12px;
+    margin-top: 26px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+  .workflow-grid ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .workflow-grid li {
+    display: grid;
+    grid-template-columns: 55px 1fr;
+    gap: 21px;
+    padding: 27px 0;
+    border-bottom: 1px solid #ffffff1c;
+  }
+  .workflow-grid li > span {
+    color: #e9c456;
+    font-family: Georgia, serif;
+    font-size: 22px;
+  }
+  .workflow-grid li strong {
+    font-size: 17px;
+  }
+  .workflow-grid li p {
+    margin: 7px 0 0;
+    color: #aebcd0;
+    font-size: 12px;
+  }
+  .centered {
+    margin: auto;
+    text-align: center;
+  }
+  .template-tags {
+    display: flex;
+    max-width: 1020px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 11px;
+    margin: 40px auto 0;
+  }
+  .template-tags span {
+    padding: 13px 17px;
+    border: 1px solid #dce3ed;
+    border-radius: 11px;
+    background: #fff;
+    color: #48566b;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .template-tags span:last-child {
+    border-color: #9dbdfb;
+    background: #edf4ff;
+    color: #1d4ed8;
+  }
+  .final-cta {
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+    margin-bottom: 90px;
+    padding: 55px 60px;
+    border-radius: 22px;
+    background: linear-gradient(125deg, #1a3156, #10213d);
+    color: #fff;
+  }
+  .final-cta > div > span {
+    color: #e7c252;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .final-cta h2 {
+    max-width: 700px;
+    margin: 11px 0 10px;
+    font-size: 34px;
+    line-height: 1.14;
+  }
+  .final-cta p {
+    margin: 0;
+    color: #b9c6d7;
+  }
+  .final-cta > a {
+    display: inline-flex;
+    min-height: 52px;
+    flex: none;
+    align-items: center;
+    gap: 17px;
+    padding: 0 22px;
+    border-radius: 10px;
+    background: #fff;
+    color: #172b4d;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+  .marketing-footer {
+    display: flex;
+    width: min(1240px, calc(100% - 48px));
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    margin: auto;
+    padding: 30px 0 38px;
+    border-top: 1px solid #dee4ec;
+    color: #7d8797;
+    font-size: 10px;
+  }
+  .marketing-footer .marketing-brand img {
+    width: 37px;
+    height: 37px;
+  }
+  .marketing-footer > span {
+    white-space: nowrap;
+  }
+  @media (max-width: 900px) {
+    .nav-links {
       display: none;
     }
-
-    .landing-footer {
+    .marketing-hero {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding-top: 70px;
+    }
+    .hero-copy {
+      text-align: center;
+    }
+    .hero-kicker,
+    .hero-actions,
+    .hero-proof {
+      justify-content: center;
+    }
+    .hero-copy > p {
+      margin-inline: auto;
+    }
+    .feature-bento {
+      grid-template-columns: 1fr 1fr;
+    }
+    .feature-large {
+      grid-column: 1/-1;
+      grid-row: auto;
+    }
+    .workflow-grid {
+      grid-template-columns: 1fr;
+      gap: 45px;
+    }
+    .final-cta {
+      align-items: flex-start;
       flex-direction: column;
-      gap: 8px;
+    }
+    .trust-strip {
+      gap: 25px;
+    }
+    .trust-strip div {
+      gap: 20px;
+      flex-wrap: wrap;
     }
   }
-
-  @media (max-width: 480px) {
-    .landing-nav {
-      width: calc(100% - 32px);
+  @media (max-width: 600px) {
+    .marketing-nav,
+    .marketing-hero,
+    .section-wrap,
+    .marketing-footer {
+      width: calc(100% - 30px);
     }
-
-    .btn-login {
+    .marketing-nav {
+      height: 72px;
+    }
+    .nav-login {
       display: none;
     }
-
-    .hero-section,
-    .features-section,
-    .cta-section {
-      width: calc(100% - 32px);
+    .hero-copy h1 {
+      font-size: 44px;
+      letter-spacing: -2.4px;
     }
-
+    .marketing-hero {
+      padding-top: 50px;
+    }
     .hero-actions {
-      flex-direction: column;
       align-items: stretch;
+      flex-direction: column;
+    }
+    .hero-visual {
+      min-height: 500px;
+      transform: scale(0.78);
+      margin: -50px -80px;
+    }
+    .trust-strip {
+      align-items: flex-start;
+      flex-direction: column;
+      padding: 24px;
+    }
+    .feature-section,
+    .template-showcase {
+      padding: 80px 0;
+    }
+    .feature-bento {
+      grid-template-columns: 1fr;
+    }
+    .feature-large {
+      grid-column: auto;
+    }
+    .workflow-section {
+      padding: 80px 0;
+    }
+    .final-cta {
+      padding: 35px 26px;
+    }
+    .final-cta h2 {
+      font-size: 28px;
+    }
+    .marketing-footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .marketing-footer > p {
+      display: none;
     }
   }
 </style>
