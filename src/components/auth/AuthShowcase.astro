@@ -1,0 +1,115 @@
+---
+interface Props {
+  variant: 'login' | 'register'
+}
+
+const { variant } = Astro.props
+---
+
+{
+  variant === 'login' ? (
+    <aside class="auth-showcase">
+      <div class="auth-showcase-copy">
+        <span class="auth-eyebrow">
+          <i /> RUANG KERJA SURAT DIGITAL
+        </span>
+        <h2>
+          Dokumen resmi,
+          <>
+            <br />
+            <em>selesai lebih cepat.</em>
+          </>
+        </h2>
+        <p>
+          Susun, simpan, dan unduh surat perusahaan dalam satu alur kerja yang rapi dan profesional.
+        </p>
+        <div class="auth-benefits">
+          <>
+            <span>
+              <b>✓</b> Template siap pakai
+            </span>
+            <span>
+              <b>✓</b> Preview langsung
+            </span>
+            <span>
+              <b>✓</b> Ekspor PDF profesional
+            </span>
+          </>
+        </div>
+      </div>
+      <div class="auth-paper" aria-hidden="true">
+        <div class="auth-paper-head">
+          <>
+            <img src="/images/logo-suratku.png" alt="" />
+            <div>
+              <>
+                <strong>SURATKU</strong>
+                <small>DOKUMEN RESMI</small>
+              </>
+            </div>
+          </>
+        </div>
+        <>
+          <hr />
+          <strong class="auth-paper-title">SURAT KETERANGAN</strong>
+        </>
+        <>
+          <span class="paper-line wide" />
+          <span class="paper-line" />
+          <span class="paper-line wide" />
+          <span class="paper-line short" />
+        </>
+        <div class="paper-sign">
+          <>
+            <span />
+            <small>Penandatangan</small>
+          </>
+        </div>
+      </div>
+    </aside>
+  ) : (
+    <aside class="auth-showcase register-showcase">
+      <div class="auth-showcase-copy">
+        <span class="auth-eyebrow">
+          <i /> MULAI TANPA BIAYA
+        </span>
+        <h2>
+          Satu akun untuk
+          <>
+            <br />
+            <em>semua surat resmi.</em>
+          </>
+        </h2>
+        <p>Bangun standar dokumen perusahaan yang konsisten—dari template hingga arsip PDF.</p>
+        <div class="auth-metrics">
+          <>
+            <div>
+              <>
+                <strong>24+</strong>
+                <span>Jenis surat</span>
+              </>
+            </div>
+            <div>
+              <>
+                <strong>A4</strong>
+                <span>Siap cetak</span>
+              </>
+            </div>
+            <div>
+              <>
+                <strong>1×</strong>
+                <span>Isi identitas</span>
+              </>
+            </div>
+          </>
+        </div>
+      </div>
+      <div class="auth-quote">
+        <>
+          <span>“</span>
+          <p>Administrasi yang terlihat profesional dimulai dari dokumen yang konsisten.</p>
+        </>
+      </div>
+    </aside>
+  )
+}

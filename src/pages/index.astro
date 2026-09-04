@@ -1,22 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import Brand from '../components/Brand.astro'
 ---
 
 <Layout title="SuratKu — Surat Resmi, Selesai dalam Menit">
   <main class="marketing-page">
     <nav class="marketing-nav">
-      <a href="/" class="marketing-brand"
-        ><img src="/images/logo-suratku.png" alt="Logo SuratKu" /><span
-          ><strong>SuratKu</strong><small>DOCUMENT BUILDER</small></span
-        ></a
-      >
+      <Brand tagline="DOCUMENT BUILDER" />
       <div class="nav-links">
-        <a href="#fitur">Fitur</a><a href="#cara-kerja">Cara kerja</a><a href="#template"
-          >Template</a>
+        <a href="#fitur">Fitur</a><a href="#keunggulan">Keunggulan</a><a href="#cara-kerja"
+          >Cara kerja</a
+        ><a href="#faq">FAQ</a>
       </div>
       <div class="nav-actions">
         <a href="/login" class="nav-login">Masuk</a><a href="/register" class="nav-register"
-          >Mulai gratis <span>→</span></a>
+          >Mulai gratis <span>→</span></a
+        >
       </div>
     </nav>
 
@@ -25,20 +24,27 @@ import Layout from '../layouts/Layout.astro'
         <div class="hero-kicker"><span></span>Platform dokumen resmi untuk bisnis modern</div>
         <h1>Surat perusahaan yang <em>siap dikirim,</em> bukan sekadar diketik.</h1>
         <p>
-          Buat, sesuaikan, simpan, dan unduh surat resmi dalam hitungan menit. Format selalu
-          konsisten—tanpa mengatur ulang dokumen dari nol.
+          Dari kop perusahaan sampai tanda tangan, susun surat resmi yang rapi dalam satu alur
+          kerja. Lebih cepat dibuat, lebih mudah diperiksa, dan siap dikirim sebagai PDF.
         </p>
         <div class="hero-actions">
           <a href="/register" class="hero-primary">Buat surat pertama <span>→</span></a><a
             href="#cara-kerja"
-            class="hero-secondary"><i>▶</i> Lihat cara kerja</a>
+            class="hero-secondary"><i>▶</i> Lihat cara kerja</a
+          >
         </div>
         <div class="hero-proof">
           <div class="proof-avatars"><span>SK</span><span>HR</span><span>GA</span></div><div>
             <strong>Lebih cepat. Lebih konsisten.</strong><small
-              >Dibangun untuk administrasi perusahaan.</small>
+              >Dibangun untuk administrasi perusahaan.</small
+            >
           </div>
         </div>
+        <ul class="hero-benefits">
+          <li><span>✓</span>Preview dokumen langsung</li><li><span>✓</span>Autosave draf</li><li>
+            <span>✓</span>Template dapat digunakan ulang
+          </li>
+        </ul>
       </div>
       <div class="hero-visual" aria-label="Contoh dokumen SuratKu">
         <div class="visual-chip chip-top">
@@ -162,19 +168,176 @@ import Layout from '../layouts/Layout.astro'
       </div>
     </section>
 
+    <section id="keunggulan" class="advantage-section">
+      <div class="section-wrap">
+        <div class="section-intro advantage-intro">
+          <span class="section-kicker gold">BUKAN SEKADAR EDITOR TEKS</span><h2>
+            Surat yang terlihat serius, tanpa proses yang rumit.
+          </h2><p>
+            SuratKu menyatukan identitas perusahaan, penyusunan konten, pemeriksaan, dan arsip
+            dokumen. Anda dapat fokus pada isi surat—sistem membantu menjaga bagian lainnya tetap
+            konsisten.
+          </p>
+        </div>
+        <div class="advantage-layout">
+          <article class="before-after">
+            <div class="comparison-label">SEBELUM SURATKU</div><ul>
+              <li>
+                <i>×</i><span
+                  ><strong>Format dibuat berulang</strong><small
+                    >Kop, margin, dan tanda tangan perlu disusun kembali.</small
+                  ></span
+                >
+              </li><li>
+                <i>×</i><span
+                  ><strong>Rawan ada data tertinggal</strong><small
+                    >Nama lama dan placeholder mudah lolos saat menyalin dokumen.</small
+                  ></span
+                >
+              </li><li>
+                <i>×</i><span
+                  ><strong>Dokumen tersebar</strong><small
+                    >Sulit menemukan versi terakhir ketika dibutuhkan.</small
+                  ></span
+                >
+              </li>
+            </ul>
+          </article>
+          <article class="before-after after">
+            <div class="comparison-label">DENGAN SURATKU</div><ul>
+              <li>
+                <i>✓</i><span
+                  ><strong>Identitas otomatis konsisten</strong><small
+                    >Kop surat mengambil logo dan profil perusahaan Anda.</small
+                  ></span
+                >
+              </li><li>
+                <i>✓</i><span
+                  ><strong>Diperiksa sebelum final</strong><small
+                    >Field kosong dan placeholder ditandai sebelum surat disimpan.</small
+                  ></span
+                >
+              </li><li>
+                <i>✓</i><span
+                  ><strong>Satu sumber dokumen</strong><small
+                    >Draf, versi, dan surat final tersedia dalam satu ruang kerja.</small
+                  ></span
+                >
+              </li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="capability-section section-wrap">
+      <div class="section-intro">
+        <span class="section-kicker">LENGKAP UNTUK PEKERJAAN NYATA</span><h2>
+          Detail kecil yang membuat administrasi jauh lebih ringan.
+        </h2><p>
+          Fitur SuratKu dirancang mengikuti pekerjaan harian tim administrasi, HR, operasional,
+          hingga pemilik usaha.
+        </p>
+      </div>
+      <div class="capability-grid">
+        <article>
+          <span>01</span><h3>Preview sesuai kertas</h3><p>
+            Pilih A4, F4, Letter, atau Legal. Tampilan halaman dan estimasi kepadatan mengikuti
+            ukuran yang digunakan.
+          </p>
+        </article><article>
+          <span>02</span><h3>Impor template Word</h3><p>
+            Bawa format surat perusahaan yang sudah ada, lalu rapikan dan gunakan kembali di
+            SuratKu.
+          </p>
+        </article><article>
+          <span>03</span><h3>Editor kaya format</h3><p>
+            Atur ukuran teks, jarak baris, alignment, daftar, warna, serta cari dan ganti teks
+            langsung dari editor.
+          </p>
+        </article><article>
+          <span>04</span><h3>Data dinamis</h3><p>
+            Sisipkan nama, jabatan, tanggal, perusahaan, dan data penting lain tanpa mengetik
+            berulang kali.
+          </p>
+        </article><article>
+          <span>05</span><h3>Tanda tangan & cap</h3><p>
+            Unggah aset persetujuan, atur ukuran dan penempatannya, lalu tampilkan hanya saat
+            diperlukan.
+          </p>
+        </article><article>
+          <span>06</span><h3>Versi yang lebih aman</h3><p>
+            Autosave menjaga perubahan, sementara riwayat versi membantu memulihkan dokumen saat
+            dibutuhkan.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="audience-section section-wrap">
+      <div class="audience-copy">
+        <span class="section-kicker">UNTUK SIAPA SURATKU?</span><h2>
+          Satu standar surat untuk seluruh tim.
+        </h2><p>
+          Cocok untuk organisasi yang ingin bergerak cepat tanpa mengorbankan kerapian komunikasi
+          formal.
+        </p><a href="/register">Bangun ruang kerja Anda <span>→</span></a>
+      </div><div class="audience-list">
+        <article>
+          <b>HR & People</b><p>Surat keterangan, mutasi, promosi, peringatan, dan keputusan.</p>
+        </article><article>
+          <b>General Affairs</b><p>Undangan, pemberitahuan, berita acara, dan surat tugas.</p>
+        </article><article>
+          <b>Operasional</b><p>Dokumen rutin dengan format dan identitas yang seragam.</p>
+        </article><article>
+          <b>UMKM & Pemilik Usaha</b><p>
+            Surat profesional tanpa harus memiliki tim administrasi khusus.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="faq" class="faq-section section-wrap">
+      <div class="section-intro centered">
+        <span class="section-kicker">PERTANYAAN UMUM</span><h2>
+          Sebelum mulai menggunakan SuratKu.
+        </h2>
+      </div><div class="faq-grid">
+        <details open>
+          <summary>Apakah bisa memakai identitas perusahaan sendiri?</summary><p>
+            Bisa. Logo, nama perusahaan, alamat, kontak, kota, dan penandatangan default dapat
+            disimpan di profil dan digunakan pada kop surat.
+          </p>
+        </details><details>
+          <summary>Apakah template Word lama masih dapat digunakan?</summary><p>
+            Bisa. Template DOCX dapat diimpor, disesuaikan di editor, lalu digunakan kembali untuk
+            membuat surat berikutnya.
+          </p>
+        </details><details>
+          <summary>Bagaimana mencegah surat yang belum lengkap menjadi final?</summary><p>
+            SuratKu memeriksa field penting dan mendeteksi placeholder yang belum diganti sebelum
+            proses finalisasi.
+          </p>
+        </details><details>
+          <summary>Apakah dokumen dapat diedit lagi?</summary><p>
+            Draf dapat dilanjutkan, surat lama dapat diduplikasi menjadi surat baru, dan versi
+            sebelumnya dapat dipulihkan tanpa mengubah dokumen asli.
+          </p>
+        </details>
+      </div>
+    </section>
+
     <section class="final-cta section-wrap">
       <div>
-        <span>Mulai lebih rapi hari ini</span><h2>
-          Administrasi profesional dimulai dari surat yang tepat.
+        <span>Waktunya bekerja lebih pasti</span><h2>
+          Jangan biarkan satu surat menghabiskan waktu yang seharusnya dipakai untuk bertumbuh.
         </h2><p>Buat akun dan siapkan dokumen resmi pertama Anda bersama SuratKu.</p>
       </div><a href="/register">Mulai gratis sekarang <span>→</span></a>
     </section>
     <footer class="marketing-footer">
-      <a href="/" class="marketing-brand"
-        ><img src="/images/logo-suratku.png" alt="" /><span
-          ><strong>SuratKu</strong><small>DOCUMENT BUILDER</small></span
-        ></a
-      ><p>Dokumen resmi. Proses lebih pasti.</p><span>© 2026 SuratKu. Semua hak dilindungi.</span>
+      <Brand tagline="DOCUMENT BUILDER" decorative compact /><p>
+        Dokumen resmi. Proses lebih pasti.
+      </p><span>© 2026 SuratKu. Semua hak dilindungi.</span>
     </footer>
   </main>
 </Layout>
@@ -391,6 +554,25 @@ import Layout from '../layouts/Layout.astro'
   .hero-proof small {
     color: #8590a1;
     font-size: 9px;
+  }
+  .hero-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px 18px;
+    margin: 24px 0 0;
+    padding: 0;
+    color: #5f6d82;
+    font-size: 10px;
+    font-weight: 700;
+    list-style: none;
+  }
+  .hero-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hero-benefits span {
+    color: #16834a;
   }
   .hero-visual {
     display: flex;
@@ -727,6 +909,217 @@ import Layout from '../layouts/Layout.astro'
     background: #edf4ff;
     color: #1d4ed8;
   }
+  .advantage-section {
+    padding: 110px 0;
+    background: #142746;
+    color: #fff;
+  }
+  .advantage-intro {
+    max-width: 790px;
+  }
+  .advantage-intro p {
+    color: #b8c4d5;
+  }
+  .advantage-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 48px;
+  }
+  .before-after {
+    padding: 31px;
+    border: 1px solid #ffffff17;
+    border-radius: 18px;
+    background: #ffffff08;
+  }
+  .before-after.after {
+    border-color: #e9c45655;
+    background: linear-gradient(145deg, #ffffff0d, #e9c4560c);
+  }
+  .comparison-label {
+    color: #98a9c0;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+  }
+  .after .comparison-label {
+    color: #e9c456;
+  }
+  .before-after ul {
+    display: grid;
+    gap: 5px;
+    margin: 21px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .before-after li {
+    display: grid;
+    grid-template-columns: 31px 1fr;
+    gap: 12px;
+    padding: 16px 0;
+    border-top: 1px solid #ffffff12;
+  }
+  .before-after li i {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border-radius: 50%;
+    background: #ffffff0d;
+    color: #91a0b5;
+    font-style: normal;
+  }
+  .before-after.after li i {
+    background: #e9c4561c;
+    color: #e9c456;
+  }
+  .before-after li span {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .before-after li strong {
+    font-size: 14px;
+  }
+  .before-after li small {
+    color: #9eacc0;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+  .capability-section {
+    padding: 115px 0;
+  }
+  .capability-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 47px;
+  }
+  .capability-grid article {
+    min-height: 190px;
+    padding: 27px;
+    border: 1px solid #e0e6ee;
+    border-radius: 16px;
+    background: #fff;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .capability-grid article:hover {
+    box-shadow: 0 18px 45px #15294712;
+    transform: translateY(-3px);
+  }
+  .capability-grid article > span {
+    color: #2563eb;
+    font-family: Georgia, serif;
+    font-size: 12px;
+  }
+  .capability-grid h3 {
+    margin: 31px 0 10px;
+    font-size: 17px;
+  }
+  .capability-grid p {
+    margin: 0;
+    color: #758195;
+    font-size: 11px;
+    line-height: 1.7;
+  }
+  .audience-section {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 75px;
+    align-items: center;
+    box-sizing: border-box;
+    margin-bottom: 110px;
+    padding: 63px;
+    border: 1px solid #dfe6ef;
+    border-radius: 22px;
+    background: #eef4fd;
+  }
+  .audience-copy h2 {
+    margin: 12px 0 14px;
+    font-size: 38px;
+    line-height: 1.1;
+    letter-spacing: -1.8px;
+  }
+  .audience-copy p {
+    color: #6e7a8f;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .audience-copy a {
+    display: inline-flex;
+    gap: 12px;
+    margin-top: 17px;
+    color: #173663;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+  .audience-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .audience-list article {
+    padding: 22px;
+    border: 1px solid #dce5f1;
+    border-radius: 14px;
+    background: #fff;
+  }
+  .audience-list b {
+    font-size: 13px;
+  }
+  .audience-list p {
+    margin: 8px 0 0;
+    color: #778397;
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  .faq-section {
+    padding-bottom: 115px;
+  }
+  .faq-grid {
+    display: grid;
+    max-width: 920px;
+    gap: 11px;
+    margin: 42px auto 0;
+  }
+  .faq-grid details {
+    padding: 0 23px;
+    border: 1px solid #dfe5ee;
+    border-radius: 13px;
+    background: #fff;
+  }
+  .faq-grid summary {
+    position: relative;
+    padding: 20px 34px 20px 0;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 800;
+    list-style: none;
+  }
+  .faq-grid summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-grid summary::after {
+    position: absolute;
+    top: 16px;
+    right: 0;
+    content: '+';
+    color: #2563eb;
+    font-size: 20px;
+  }
+  .faq-grid details[open] summary::after {
+    content: '−';
+  }
+  .faq-grid p {
+    max-width: 760px;
+    margin: -2px 0 21px;
+    color: #6f7b8e;
+    font-size: 11px;
+    line-height: 1.7;
+  }
   .final-cta {
     display: flex;
     box-sizing: border-box;
@@ -820,6 +1213,13 @@ import Layout from '../layouts/Layout.astro'
       grid-template-columns: 1fr;
       gap: 45px;
     }
+    .capability-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .audience-section {
+      grid-template-columns: 1fr;
+      gap: 38px;
+    }
     .final-cta {
       align-items: flex-start;
       flex-direction: column;
@@ -856,6 +1256,9 @@ import Layout from '../layouts/Layout.astro'
       align-items: stretch;
       flex-direction: column;
     }
+    .hero-benefits {
+      justify-content: center;
+    }
     .hero-visual {
       min-height: 500px;
       transform: scale(0.78);
@@ -867,7 +1270,8 @@ import Layout from '../layouts/Layout.astro'
       padding: 24px;
     }
     .feature-section,
-    .template-showcase {
+    .template-showcase,
+    .capability-section {
       padding: 80px 0;
     }
     .feature-bento {
@@ -878,6 +1282,24 @@ import Layout from '../layouts/Layout.astro'
     }
     .workflow-section {
       padding: 80px 0;
+    }
+    .advantage-section {
+      padding: 80px 0;
+    }
+    .advantage-layout,
+    .capability-grid,
+    .audience-list {
+      grid-template-columns: 1fr;
+    }
+    .audience-section {
+      margin-bottom: 80px;
+      padding: 34px 24px;
+    }
+    .audience-copy h2 {
+      font-size: 32px;
+    }
+    .faq-section {
+      padding-bottom: 80px;
     }
     .final-cta {
       padding: 35px 26px;

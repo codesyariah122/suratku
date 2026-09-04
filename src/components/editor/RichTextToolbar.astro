@@ -1,0 +1,127 @@
+---
+interface Props {
+  namespace?: 'editor' | 'template' | 'profile'
+  ariaLabel: string
+  compact?: boolean
+  headings?: boolean
+  lists?: boolean
+  orderedList?: boolean
+  colors?: boolean
+  link?: boolean
+  fullAlign?: boolean
+  strike?: boolean
+}
+
+const {
+  namespace = 'editor',
+  ariaLabel,
+  compact = false,
+  headings = true,
+  lists = true,
+  orderedList = true,
+  colors = true,
+  link = false,
+  fullAlign = true,
+  strike = true,
+} = Astro.props
+const command = (value: string) => ({ [`data-${namespace}-command`]: value })
+const valueCommand = (value: string) => ({ [`data-${namespace}-value-command`]: value })
+const colorCommand = (value: string) => ({ [`data-${namespace}-color-command`]: value })
+---
+
+<div class="document-editor-toolbar" role="toolbar" aria-label={ariaLabel}>
+  <div class="editor-tool-group editor-history-tools">
+    <button type="button" {...command('undo')} title="Urungkan">↶</button><button
+      type="button"
+      {...command('redo')}
+      title="Ulangi">↷</button
+    >
+  </div>
+  {
+    namespace !== 'profile' && (
+      <select
+        class="editor-style-select"
+        {...valueCommand('formatBlock')}
+        aria-label="Gaya paragraf"
+      >
+        <option value="p">Paragraf</option>
+        {headings && <option value="h2">Judul</option>}
+        {headings && <option value="h3">Subjudul</option>}
+        <option value="blockquote">Kutipan</option>
+      </select>
+    )
+  }
+  <div class="editor-tool-group">
+    <button type="button" {...command('bold')} title="Tebal"><strong>B</strong></button><button
+      type="button"
+      {...command('italic')}
+      title="Miring"><em>I</em></button
+    ><button type="button" {...command('underline')} title="Garis bawah"><u>U</u></button>
+    {
+      strike && (
+        <button type="button" {...command('strikeThrough')} title="Coret">
+          <s>S</s>
+        </button>
+      )
+    }
+  </div>
+  {
+    lists && (
+      <div class="editor-tool-group">
+        <button type="button" {...command('insertUnorderedList')} title="Daftar poin">
+          • Daftar
+        </button>
+        {orderedList && (
+          <button type="button" {...command('insertOrderedList')} title="Daftar nomor">
+            1. Daftar
+          </button>
+        )}
+      </div>
+    )
+  }
+  <div class="editor-tool-group editor-align-tools">
+    <button type="button" {...command('justifyLeft')} title="Rata kiri">≡</button><button
+      type="button"
+      {...command('justifyCenter')}
+      title="Rata tengah">≡</button
+    >
+    {
+      namespace !== 'profile' && (
+        <button type="button" {...command('justifyRight')} title="Rata kanan">
+          ≡
+        </button>
+      )
+    }
+    {
+      fullAlign && (
+        <button type="button" {...command('justifyFull')} title="Rata kiri-kanan">
+          ☰
+        </button>
+      )
+    }
+  </div>
+  {
+    colors && (
+      <div class="editor-tool-group editor-color-tools">
+        <>
+          <label title="Warna teks">
+            A<input type="color" value="#172033" {...colorCommand('foreColor')} />
+          </label>
+          <label class="editor-highlight" title="Warna sorotan">
+            ▰<input type="color" value="#fff2a8" {...colorCommand('hiliteColor')} />
+          </label>
+        </>
+        {link && (
+          <button type="button" data-editor-action="link" title="Tambahkan tautan">
+            ↗
+          </button>
+        )}
+      </div>
+    )
+  }
+  <button
+    type="button"
+    class:list={[namespace === 'profile' ? 'editor-clear-button' : 'editor-clear-format']}
+    {...command('removeFormat')}>Hapus format</button
+  >
+</div>

@@ -1,67 +1,18 @@
 ---
 import DashboardLayout from '../../layouts/DashboardLayout.astro'
-
-const groups = [
-  {
-    name: 'Korespondensi eksternal',
-    description: 'Komunikasi resmi dengan klien, vendor, dan mitra.',
-    items: [
-      ['penawaran', 'Surat Penawaran', 'Proposal harga atau layanan', '↗'],
-      ['permohonan', 'Surat Permohonan', 'Permintaan resmi kepada pihak lain', '✦'],
-      ['undangan', 'Surat Undangan', 'Rapat, acara, atau pertemuan', '◫'],
-      ['pemberitahuan', 'Surat Pemberitahuan', 'Informasi resmi kepada pihak terkait', '◉'],
-      ['kerjasama', 'Surat Kerja Sama', 'Pembuka atau tindak lanjut kemitraan', '◇'],
-      ['balasan', 'Surat Balasan Resmi', 'Jawaban atas surat yang diterima', '↩'],
-    ],
-  },
-  {
-    name: 'Human Resources',
-    description: 'Administrasi dan komunikasi ketenagakerjaan.',
-    items: [
-      ['keterangan-kerja', 'Surat Keterangan Kerja', 'Konfirmasi status karyawan', '▣'],
-      ['pengangkatan', 'Surat Pengangkatan', 'Pengangkatan pegawai atau jabatan', '↑'],
-      ['mutasi', 'Surat Mutasi', 'Perubahan unit atau lokasi kerja', '⇄'],
-      ['promosi', 'Surat Promosi', 'Kenaikan jabatan karyawan', '△'],
-      ['peringatan', 'Surat Peringatan', 'Peringatan dan tindakan disiplin', '!'],
-      ['phk', 'Surat Pemutusan Kerja', 'Pemberitahuan berakhirnya hubungan kerja', '⊘'],
-    ],
-  },
-  {
-    name: 'Internal perusahaan',
-    description: 'Dokumen operasional untuk organisasi dan tim.',
-    items: [
-      ['memo', 'Memo Internal', 'Arahan atau informasi antar divisi', 'M'],
-      ['tugas', 'Surat Tugas', 'Penugasan pegawai atau tim', '✓'],
-      ['keputusan', 'Surat Keputusan', 'Ketetapan resmi perusahaan', '§'],
-      ['edaran', 'Surat Edaran', 'Informasi untuk banyak penerima', '◎'],
-      ['kuasa', 'Surat Kuasa', 'Pelimpahan kewenangan tertentu', '⌘'],
-      ['berita-acara', 'Berita Acara', 'Dokumentasi kegiatan atau serah terima', '≡'],
-    ],
-  },
-  {
-    name: 'Keuangan & komersial',
-    description: 'Dokumen penagihan dan administrasi bisnis.',
-    items: [
-      ['tagihan', 'Surat Penagihan', 'Pengingat pembayaran invoice', 'Rp'],
-      ['konfirmasi', 'Surat Konfirmasi', 'Konfirmasi transaksi atau kesepakatan', '✓'],
-      ['pesanan', 'Surat Pesanan', 'Pemesanan barang atau jasa', '□'],
-      ['komplain', 'Surat Keluhan Bisnis', 'Keluhan resmi kepada vendor', '!'],
-      ['rekomendasi', 'Surat Rekomendasi', 'Rekomendasi profesional perusahaan', '★'],
-      ['resmi', 'Surat Resmi Kosong', 'Mulai dari format formal standar', '+'],
-    ],
-  },
-]
+import PageHeader from '../../components/dashboard/PageHeader.astro'
+import { letterCatalog as groups } from '../../data/letterCatalog'
 ---
 
 <DashboardLayout title="Katalog Surat - SuratKu">
   <section class="page-shell catalog-shell">
-    <header class="page-header">
-      <div>
-        <span class="eyebrow">KATALOG TEMPLATE</span><h1>Buat surat perusahaan</h1><p>
-          Pilih format siap pakai atau mulai dari template milik Anda.
-        </p>
-      </div><a href="/dashboard/templates" class="secondary-button">Kelola template saya</a>
-    </header>
+    <PageHeader
+      eyebrow="KATALOG TEMPLATE"
+      title="Buat surat perusahaan"
+      description="Pilih format siap pakai atau mulai dari template milik Anda."
+    >
+      <a href="/dashboard/templates" class="secondary-button">Kelola template saya</a>
+    </PageHeader>
     <div class="catalog-toolbar">
       <label class="search-box"
         ><span>⌕</span><input

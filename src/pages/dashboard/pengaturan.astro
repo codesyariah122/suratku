@@ -1,19 +1,21 @@
 ---
 import DashboardLayout from '../../layouts/DashboardLayout.astro'
+import PageHeader from '../../components/dashboard/PageHeader.astro'
+import RichTextToolbar from '../../components/editor/RichTextToolbar.astro'
 ---
 
 <DashboardLayout title="Identitas Perusahaan - SuratKu">
   <section class="page-shell narrow-shell">
-    <header class="page-header">
-      <div>
-        <span class="eyebrow">PENGATURAN</span><h1>Identitas pengirim</h1><p>
-          Data ini akan otomatis dipakai pada surat baru Anda.
-        </p>
-      </div>
-    </header>
+    <PageHeader
+      eyebrow="PENGATURAN"
+      title="Identitas pengirim"
+      description="Data ini akan otomatis dipakai pada surat baru Anda."
+    />
     <form id="profile-form" class="panel-card">
       <div class="form-card-header">
-        <h2>Profil Anda</h2><p>Gunakan identitas personal atau perusahaan.</p>
+        <h2>Profil & kop surat</h2><p>
+          Identitas ini menjadi kop dan penandatangan default pada setiap surat baru.
+        </p>
       </div>
       <div
         id="logo-dropzone"
@@ -64,21 +66,76 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
             placeholder="PT Nama Perusahaan"
           />
         </div>
-        <div class="form-group form-group-full">
-          <label for="company_address">Alamat</label><textarea
+        <div class="form-group form-group-full profile-address-field">
+          <label for="company-address-editor">Alamat dan informasi kop surat</label><textarea
             id="company_address"
             name="company_address"
-            rows="3"></textarea>
+            class="rich-editor-value"
+            aria-hidden="true"></textarea><div class="document-editor profile-rich-editor">
+            <RichTextToolbar
+              namespace="profile"
+              ariaLabel="Format alamat kop surat"
+              orderedList={false}
+              colors={false}
+              fullAlign={false}
+              strike={false}
+            /><div
+              id="company-address-editor"
+              class="document-editor-canvas"
+              contenteditable="true"
+              role="textbox"
+              aria-multiline="true"
+              data-placeholder="Head Office: Jalan lengkap perusahaan
+Cabang: Alamat cabang (opsional)"
+            >
+            </div>
+          </div><small class="field-help">Format teks akan digunakan langsung pada kop surat.</small
+          >
         </div>
         <div class="form-group">
-          <label for="company_phone">Nomor telepon</label><input
+          <label for="company_phone">Telepon perusahaan</label><input
             id="company_phone"
             name="company_phone"
             type="tel"
+            placeholder="(022) 1234 5678"
+          />
+        </div>
+        <div class="form-group">
+          <label for="company_email">Email perusahaan</label><input
+            id="company_email"
+            name="company_email"
+            type="email"
+            placeholder="office@perusahaan.com"
+          />
+        </div>
+        <div class="form-group">
+          <label for="company_city">Kota untuk tanggal surat</label><input
+            id="company_city"
+            name="company_city"
+            placeholder="Bandung"
           />
         </div>
         <div class="form-group">
           <label for="email">Email akun</label><input id="email" disabled />
+        </div>
+      </div>
+      <div class="profile-section-divider">
+        <span>Penandatangan default</span><small>Dapat diganti kembali saat membuat surat.</small>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="signer_name">Nama penandatangan</label><input
+            id="signer_name"
+            name="signer_name"
+            placeholder="Nama lengkap"
+          />
+        </div>
+        <div class="form-group">
+          <label for="signer_title">Jabatan penandatangan</label><input
+            id="signer_title"
+            name="signer_title"
+            placeholder="Direktur / Manajer"
+          />
         </div>
       </div>
       <div class="form-footer">
@@ -104,6 +161,28 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
   const fileName = document.querySelector('#logo-file-name') as HTMLElement
   const fileSize = document.querySelector('#logo-file-size') as HTMLElement
   const removeLogo = document.querySelector('#remove-logo') as HTMLButtonElement
+  const addressEditor = document.querySelector('#company-address-editor') as HTMLElement
+  const addressValue = document.querySelector('#company_address') as HTMLTextAreaElement
+  const escapeText = (value = '') =>
+    value.replace(/[&<>]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[char]!)
+  const sanitizeAddressHtml = (html = '') => {
+    const parsed = new DOMParser().parseFromString(html, 'text/html')
+    parsed.body
+      .querySelectorAll('script,style,iframe,object,embed,img,a,form,input,button')
+      .forEach((node) => node.remove())
+    parsed.body.querySelectorAll<HTMLElement>('*').forEach((node) => {
+      ;[...node.attributes].forEach((attribute) => {
+        const keepAlignment =
+          attribute.name === 'style' &&
+          /^text-align:\s*(left|right|center|justify);?$/i.test(attribute.value.trim())
+        if (!keepAlignment) node.removeAttribute(attribute.name)
+      })
+    })
+    return parsed.body.innerHTML
+  }
+  const syncAddress = () => {
+    addressValue.value = sanitizeAddressHtml(addressEditor.innerHTML).trim()
+  }
   function showLogo(url: string) {
     logoPreview.innerHTML = url
       ? `<img src="${url}" alt="Logo perusahaan" />`
@@ -143,10 +222,23 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     ;(document.querySelector('#full_name') as HTMLInputElement).value =
       data?.full_name || user.user_metadata?.full_name || ''
     ;(document.querySelector('#company_name') as HTMLInputElement).value = data?.company_name || ''
-    ;(document.querySelector('#company_address') as HTMLTextAreaElement).value =
-      data?.company_address || ''
+    const savedAddress = String(data?.company_address || '')
+    addressEditor.innerHTML = /<[^>]+>/.test(savedAddress)
+      ? sanitizeAddressHtml(savedAddress)
+      : savedAddress
+          .split(/\n+/)
+          .filter(Boolean)
+          .map((line) => `<p>${escapeText(line)}</p>`)
+          .join('')
+    syncAddress()
     ;(document.querySelector('#company_phone') as HTMLInputElement).value =
       data?.company_phone || ''
+    ;(document.querySelector('#company_email') as HTMLInputElement).value =
+      data?.company_email || ''
+    ;(document.querySelector('#company_city') as HTMLInputElement).value = data?.company_city || ''
+    ;(document.querySelector('#signer_name') as HTMLInputElement).value =
+      data?.signer_name || data?.full_name || ''
+    ;(document.querySelector('#signer_title') as HTMLInputElement).value = data?.signer_title || ''
     logoUrl = data?.logo_url || ''
     showLogo(logoUrl)
   }
@@ -192,8 +284,18 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     logoDropzone.classList.remove('file-ready')
     showLogo('')
   })
+  document.querySelectorAll<HTMLButtonElement>('[data-profile-command]').forEach((button) => {
+    button.addEventListener('mousedown', (event) => event.preventDefault())
+    button.addEventListener('click', () => {
+      addressEditor.focus()
+      document.execCommand(button.dataset.profileCommand || '', false)
+      syncAddress()
+    })
+  })
+  addressEditor.addEventListener('input', syncAddress)
   form?.addEventListener('submit', async (e) => {
     e.preventDefault()
+    syncAddress()
     const {
       data: { user },
     } = await supabase.auth.getUser()
@@ -226,6 +328,10 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
       company_name: fd.get('company_name'),
       company_address: fd.get('company_address'),
       company_phone: fd.get('company_phone'),
+      company_email: fd.get('company_email'),
+      company_city: fd.get('company_city'),
+      signer_name: fd.get('signer_name'),
+      signer_title: fd.get('signer_title'),
       logo_url: logoUrl || null,
     }
     const { data: updatedProfile, error: updateError } = await supabase
@@ -240,7 +346,10 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
       saveError = insertError
     }
     if (saveError) {
-      message.textContent = `Gagal menyimpan profil: ${saveError.message}`
+      const missingColumn = /Could not find the '([^']+)' column/.exec(saveError.message)?.[1]
+      message.textContent = missingColumn
+        ? `Database belum diperbarui: kolom ${missingColumn} belum tersedia. Jalankan migration repair document profile schema di Supabase.`
+        : `Gagal menyimpan profil: ${saveError.message}`
       message.className = 'message error'
       return
     }

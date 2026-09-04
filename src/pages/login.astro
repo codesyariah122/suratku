@@ -1,41 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import AuthShowcase from '../components/auth/AuthShowcase.astro'
+import Brand from '../components/Brand.astro'
 ---
 
 <Layout title="Login">
   <main class="auth-page">
-    <a class="auth-home" href="/" aria-label="Kembali ke beranda">
-      <img src="/images/logo-suratku.png" alt="" />
-      <span>SuratKu</span>
-    </a>
+    <Brand class="auth-home" decorative />
 
     <section class="auth-shell">
-      <aside class="auth-showcase">
-        <div class="auth-showcase-copy">
-          <span class="auth-eyebrow"><i></i> RUANG KERJA SURAT DIGITAL</span>
-          <h2>Dokumen resmi,<br /><em>selesai lebih cepat.</em></h2>
-          <p>
-            Susun, simpan, dan unduh surat perusahaan dalam satu alur kerja yang rapi dan
-            profesional.
-          </p>
-          <div class="auth-benefits">
-            <span><b>✓</b> Template siap pakai</span>
-            <span><b>✓</b> Preview langsung</span>
-            <span><b>✓</b> Ekspor PDF profesional</span>
-          </div>
-        </div>
-        <div class="auth-paper" aria-hidden="true">
-          <div class="auth-paper-head">
-            <img src="/images/logo-suratku.png" alt="" />
-            <div><strong>SURATKU</strong><small>DOKUMEN RESMI</small></div>
-          </div>
-          <hr />
-          <strong class="auth-paper-title">SURAT KETERANGAN</strong>
-          <span class="paper-line wide"></span><span class="paper-line"></span>
-          <span class="paper-line wide"></span><span class="paper-line short"></span>
-          <div class="paper-sign"><span></span><small>Penandatangan</small></div>
-        </div>
-      </aside>
+      <AuthShowcase variant="login" />
 
       <div class="auth-card">
         <span class="auth-kicker">SELAMAT DATANG KEMBALI</span>
@@ -93,20 +67,13 @@ import Layout from '../layouts/Layout.astro'
 
 <script>
   import { supabase } from '../lib/supabase'
+  import { initializePasswordToggles } from '../lib/client/authUi'
 
   const form = document.querySelector('#login-form') as HTMLFormElement
   const button = document.querySelector('#login-button') as HTMLButtonElement
   const message = document.querySelector('#login-message') as HTMLParagraphElement
 
-  document.querySelectorAll<HTMLButtonElement>('[data-password-toggle]').forEach((toggle) => {
-    toggle.addEventListener('click', () => {
-      const input = document.querySelector(`#${toggle.dataset.passwordToggle}`) as HTMLInputElement
-      const visible = input.type === 'text'
-      input.type = visible ? 'password' : 'text'
-      toggle.textContent = visible ? 'Lihat' : 'Tutup'
-      toggle.setAttribute('aria-label', visible ? 'Tampilkan password' : 'Sembunyikan password')
-    })
-  })
+  initializePasswordToggles()
 
   form?.addEventListener('submit', async (event) => {
     event.preventDefault()

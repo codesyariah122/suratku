@@ -1,20 +1,18 @@
 ---
 import DashboardLayout from '../../layouts/DashboardLayout.astro'
+import PageHeader from '../../components/dashboard/PageHeader.astro'
 ---
 
 <DashboardLayout title="Dashboard - SuratKu">
   <main class="dashboard-page">
     <div class="dashboard-container">
       <!-- HEADER -->
-      <header class="dashboard-header">
-        <div>
-          <span class="dashboard-brand">SuratKu</span>
-
-          <h1>Dashboard</h1>
-
-          <p class="dashboard-description">Selamat datang di SuratKu.</p>
-        </div>
-      </header>
+      <PageHeader
+        class="dashboard-header"
+        eyebrow="SuratKu"
+        title="Dashboard"
+        description="Selamat datang di SuratKu."
+      />
 
       <section class="welcome-card">
         <div>
@@ -86,7 +84,14 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
       return
     }
 
-    const fullName = user.user_metadata?.full_name || 'Pengguna SuratKu'
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    const fullName =
+      profile?.full_name?.trim() || user.user_metadata?.full_name || 'Pengguna SuratKu'
 
     if (userName) {
       userName.textContent = fullName

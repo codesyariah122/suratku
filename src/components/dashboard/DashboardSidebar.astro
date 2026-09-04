@@ -1,0 +1,87 @@
+---
+import Brand from '../Brand.astro'
+
+const navItems = [
+  { href: '/dashboard', label: 'Dashboard', icon: 'grid' },
+  { href: '/dashboard/buat', label: 'Buat Surat', icon: 'edit' },
+  { href: '/dashboard/templates', label: 'Template Surat', icon: 'document' },
+  { href: '/dashboard/riwayat', label: 'Riwayat', icon: 'history' },
+  { href: '/dashboard/pengaturan', label: 'Pengaturan', icon: 'settings' },
+]
+---
+
+<aside class="dashboard-sidebar" id="dashboard-sidebar">
+  <div class="sidebar-header">
+    <Brand href="/dashboard" class="sidebar-brand" decorative />
+  </div>
+  <nav class="sidebar-nav" aria-label="Navigasi dashboard">
+    <div class="sidebar-section">
+      <span class="sidebar-section-title">MENU</span>
+      {
+        navItems.map((item) => (
+          <a href={item.href} class="sidebar-link" data-nav-link={item.href}>
+            <span class="sidebar-link-icon" aria-hidden="true">
+              {item.icon === 'grid' && (
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                </svg>
+              )}
+              {item.icon === 'edit' && (
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+              )}
+              {item.icon === 'document' && (
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 4h16v16H4z" />
+                  <path d="M8 8h8M8 12h8M8 16h5" />
+                </svg>
+              )}
+              {item.icon === 'history' && (
+                <svg viewBox="0 0 24 24">
+                  <path d="M3 12a9 9 0 1 0 3-6.7" />
+                  <path d="M3 4v6h6" />
+                  <path d="M12 7v5l3 2" />
+                </svg>
+              )}
+              {item.icon === 'settings' && (
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 1.7-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V20h-2.4v-.08a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.7-1.7.06-.06A1.7 1.7 0 0 0 8.46 15a1.7 1.7 0 0 0-1.56-1.03H6V11.6h.08A1.7 1.7 0 0 0 7.64 10a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.7-1.7.06.06A1.7 1.7 0 0 0 10.88 6.1 1.7 1.7 0 0 0 11.9 4.54V4h2.4v.08a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.7 1.7-.06.06A1.7 1.7 0 0 0 18.58 9a1.7 1.7 0 0 0 1.56 1.03H20v2.4h-.08A1.7 1.7 0 0 0 18.46 15Z" />
+                </svg>
+              )}
+            </span>
+            <span>{item.label}</span>
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <button type="button" id="logout-button" class="sidebar-logout">
+      <span class="sidebar-link-icon" aria-hidden="true"
+        ><svg viewBox="0 0 24 24"
+          ><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline
+            points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg
+        ></span
+      >
+      <span>Keluar</span>
+    </button>
+  </div>
+</aside>
+
+<style>
+  .sidebar-link-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>

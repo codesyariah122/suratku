@@ -1,0 +1,28 @@
+---
+interface Props {
+  eyebrow?: string
+  title: string
+  description?: string
+  class?: string
+  backHref?: string
+  backLabel?: string
+}
+
+const { eyebrow, title, description, class: className = '', backHref, backLabel } = Astro.props
+---
+
+<header class:list={['page-header', className]}>
+  <div>
+    {
+      backHref && (
+        <a class="text-link" href={backHref}>
+          {backLabel || '← Kembali'}
+        </a>
+      )
+    }
+    {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+    <h1>{title}</h1>
+    {description && <p>{description}</p>}
+  </div>
+  <slot />
+</header>

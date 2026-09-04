@@ -82,7 +82,14 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     sender_name?: string | null
     sender_title?: string | null
     font_family?: string | null
+    font_size?: number | null
+    line_height?: number | null
+    paper_size?: string | null
     logo_url?: string | null
+    signature_url?: string | null
+    stamp_url?: string | null
+    show_signature?: boolean | null
+    signature_size?: number | null
   }
   let letters: Letter[] = []
   const list = document.querySelector('#letters-list') as HTMLDivElement
@@ -114,7 +121,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     list.innerHTML = rows
       .map(
         (x) =>
-          `<article class="letter-row"><div class="letter-file-icon">▤</div><div class="letter-main"><strong>${esc(x.subject)}</strong><span>${esc(x.letter_number) || 'Tanpa nomor'} · ${new Date(x.letter_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div><div class="letter-recipient"><small>DITUJUKAN KEPADA</small><span>${esc(x.recipient_name)}${x.recipient_company ? ` · ${esc(x.recipient_company)}` : ''}</span></div><div class="letter-actions"><span class="status-pill ${x.status}">${x.status === 'final' ? 'Final' : 'Draf'}</span><button class="history-action preview-letter" data-preview-id="${x.id}" type="button" aria-label="Preview PDF"><span>▣</span><b>Preview</b></button><button class="history-action download-letter" data-download-id="${x.id}" type="button" aria-label="Download PDF"><span>↓</span><b>PDF</b></button><a class="icon-button edit-letter" href="/dashboard/buat/resmi?id=${x.id}" aria-label="Edit surat" title="Edit surat">✎</a><button class="icon-button delete-letter" data-id="${x.id}" aria-label="Hapus surat" title="Hapus surat">×</button></div></article>`,
+          `<article class="letter-row"><div class="letter-file-icon">▤</div><div class="letter-main"><strong>${esc(x.subject)}</strong><span>${esc(x.letter_number) || 'Tanpa nomor'} · ${new Date(x.letter_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div><div class="letter-recipient"><small>DITUJUKAN KEPADA</small><span>${esc(x.recipient_name)}${x.recipient_company ? ` · ${esc(x.recipient_company)}` : ''}</span></div><div class="letter-actions"><span class="status-pill ${x.status}">${x.status === 'final' ? 'Final' : 'Draf'}</span><button class="history-action preview-letter" data-preview-id="${x.id}" type="button" aria-label="Preview PDF"><span>▣</span><b>Preview</b></button><button class="history-action download-letter" data-download-id="${x.id}" type="button" aria-label="Download PDF"><span>↓</span><b>PDF</b></button><button class="icon-button duplicate-letter" data-duplicate-id="${x.id}" type="button" aria-label="Duplikat surat" title="Duplikat surat">⧉</button><a class="icon-button edit-letter" href="/dashboard/buat/resmi?id=${x.id}" aria-label="Edit surat" title="Edit surat">✎</a><button class="icon-button delete-letter" data-id="${x.id}" aria-label="Hapus surat" title="Hapus surat">×</button></div></article>`,
       )
       .join('')
     list.hidden = rows.length === 0
@@ -164,7 +171,13 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
   function renderPdfLetter(letter: Letter) {
     const hasTemplateFooter = /template-footer/.test(letter.body || '')
     pdfDocument.style.fontFamily = `'${letter.font_family || 'Lora'}', serif`
-    pdfDocument.innerHTML = `<header class="pdf-letterhead"><div class="pdf-logo"><img src="${letter.logo_url ? esc(letter.logo_url) : '/images/logo-suratku.png'}" alt="Logo"></div><div><strong>SuratKu</strong><small>Dokumen surat resmi perusahaan</small></div></header><div class="pdf-rule"></div><div class="pdf-date">Jakarta, ${formatDate(letter.letter_date)}</div><dl class="pdf-meta"><div><dt>Nomor</dt><dd>: ${esc(letter.letter_number) || '—'}</dd></div><div><dt>Lampiran</dt><dd>: ${esc(letter.attachment || '') || '—'}</dd></div><div><dt>Perihal</dt><dd>: ${esc(letter.subject)}</dd></div></dl><div class="pdf-recipient">Yth. <strong>${esc(letter.recipient_name)}</strong><br>${esc([letter.recipient_title, letter.recipient_company].filter(Boolean).join(', '))}<br>${esc(letter.recipient_address || 'di Tempat')}</div><div class="pdf-body">${safeRichText(letter.body || '')}</div>${hasTemplateFooter ? '' : `<div class="pdf-closing">${safeRichText(letter.closing || '')}</div><div class="pdf-signature"><span>Hormat kami,</span><strong>${esc(letter.sender_name || '')}</strong><small>${esc(letter.sender_title || '')}</small></div>`}`
+    pdfDocument.style.fontSize = `${letter.font_size || 11}pt`
+    pdfDocument.style.lineHeight = String(letter.line_height || 1.5)
+    const signatureAssets =
+      letter.show_signature === false
+        ? ''
+        : `<div class="pdf-signature-assets" style="transform:scale(${(letter.signature_size || 100) / 100})">${letter.stamp_url ? `<img src="${esc(letter.stamp_url)}" alt="Cap">` : ''}${letter.signature_url ? `<img src="${esc(letter.signature_url)}" alt="Tanda tangan">` : ''}</div>`
+    pdfDocument.innerHTML = `<header class="pdf-letterhead"><div class="pdf-logo"><img src="${letter.logo_url ? esc(letter.logo_url) : '/images/logo-suratku.png'}" alt="Logo"></div><div><strong>SuratKu</strong><small>Dokumen surat resmi perusahaan</small></div></header><div class="pdf-rule"></div><div class="pdf-date">Jakarta, ${formatDate(letter.letter_date)}</div><dl class="pdf-meta"><div><dt>Nomor</dt><dd>: ${esc(letter.letter_number) || '—'}</dd></div><div><dt>Lampiran</dt><dd>: ${esc(letter.attachment || '') || '—'}</dd></div><div><dt>Perihal</dt><dd>: ${esc(letter.subject)}</dd></div></dl><div class="pdf-recipient">Yth. <strong>${esc(letter.recipient_name)}</strong><br>${esc([letter.recipient_title, letter.recipient_company].filter(Boolean).join(', '))}<br>${esc(letter.recipient_address || 'di Tempat')}</div><div class="pdf-body">${safeRichText(letter.body || '')}</div>${hasTemplateFooter ? '' : `<div class="pdf-closing">${safeRichText(letter.closing || '')}</div><div class="pdf-signature"><span>Hormat kami,</span>${signatureAssets}<strong>${esc(letter.sender_name || '')}</strong><small>${esc(letter.sender_title || '')}</small></div>`}`
   }
   async function getFullLetter(id: string) {
     const cached = letters.find((letter) => letter.id === id)
@@ -208,13 +221,21 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     const filename = `${activePdfLetter.letter_number || activePdfLetter.subject || 'surat'}`
       .replace(/[^a-z0-9-_]+/gi, '-')
       .replace(/^-|-$/g, '')
+    const pdfFormat: string | [number, number] =
+      activePdfLetter.paper_size === 'f4'
+        ? [210, 330]
+        : activePdfLetter.paper_size === 'letter'
+          ? 'letter'
+          : activePdfLetter.paper_size === 'legal'
+            ? 'legal'
+            : 'a4'
     await html2pdf()
       .set({
         margin: 0,
         filename: `${filename}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        jsPDF: { unit: 'mm', format: pdfFormat, orientation: 'portrait' },
         pagebreak: { mode: ['css', 'legacy'] },
       })
       .from(pdfDocument)
@@ -223,6 +244,27 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro'
     downloadPdf.textContent = '↓ Download PDF'
   })
   list?.addEventListener('click', async (e) => {
+    const duplicateButton = (e.target as HTMLElement).closest(
+      '[data-duplicate-id]',
+    ) as HTMLButtonElement | null
+    if (duplicateButton) {
+      duplicateButton.disabled = true
+      try {
+        const source = (await getFullLetter(duplicateButton.dataset.duplicateId!)) as any
+        const { id, created_at, updated_at, ...copy } = source
+        const { data, error } = await supabase
+          .from('letters')
+          .insert({ ...copy, subject: `${copy.subject} (Salinan)`, status: 'draft' })
+          .select('id')
+          .single()
+        if (error) throw error
+        window.location.href = `/dashboard/buat/resmi?id=${data.id}`
+      } catch {
+        duplicateButton.disabled = false
+        window.alert('Surat gagal diduplikat. Silakan coba kembali.')
+      }
+      return
+    }
     const previewButton = (e.target as HTMLElement).closest(
       '[data-preview-id]',
     ) as HTMLButtonElement | null
